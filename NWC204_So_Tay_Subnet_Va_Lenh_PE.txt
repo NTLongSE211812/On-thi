@@ -1,0 +1,251 @@
+================================================================================
+       SỔ TAY NWC204: CÔNG THỨC TÍNH SUBNET (IPv4/IPv6) & FULL LỆNH PE CISCO
+          (Mở bằng Notepad - Dùng ôn thi nhanh PE Packet Tracer & FE)
+================================================================================
+
+PHẦN 1: CÔNG THỨC TÍNH NHẨM SUBNET IPv4 TRONG 15 GIÂY
+--------------------------------------------------------------------------------
+1. Cấu trúc IPv4:
+   - Tổng cộng 32 bits, chia làm 4 cụm (4 Octet), mỗi Octet = 8 bits.
+   - Đề cho "/n" (ví dụ /26) -> Số bit Mạng = n.
+   - Số bit Host còn lại (h):
+       h = 32 - n
+
+2. Ba Công Thức Vàng:
+   (1) Số IP gán được cho máy tính (Usable Hosts):
+       Số Host = (2^h) - 2
+       (Trừ 2 vì: Địa chỉ đầu tiên là Network Address, địa chỉ cuối là Broadcast)
+
+   (2) Số mạng con tạo được khi mượn thêm "s" bit:
+       Số mạng con = 2^s
+       (Ví dụ: cần 4 mạng con -> 2^s = 4 -> mượn s = 2 bit: từ /24 thành /26)
+
+   (3) Bước nhảy (Block Size / Magic Number):
+       Bước nhảy = 256 - (Số cuối của Subnet Mask)
+       (Hoặc với /24 đến /30 thì Bước nhảy = 2^h)
+       * Địa chỉ Mạng (Network ID): luôn là BỘI SỐ của Bước nhảy (0, Bước nhảy, 2x, 3x...)
+       * Địa chỉ Broadcast: luôn bằng (Địa chỉ mạng kế tiếp) - 1
+       * First Host (IP đầu): (Địa chỉ Mạng) + 1
+       * Last Host  (IP cuối): (Địa chỉ Broadcast) - 1
+
+
+PHẦN 2: BẢNG TRA CỨU NHANH SUBNET MASK & SỐ HOST (THUỘC LÒNG)
+--------------------------------------------------------------------------------
++--------+-------------------+------------+-----------------+------------------+
+| Prefix |    Subnet Mask    | Bit Host h |    Bước nhảy    | Số Host (2^h - 2)|
++--------+-------------------+------------+-----------------+------------------+
+|  /16   | 255.255.0.0       |  16 bits   | 1 (ở Octet 2)   | 65,534 hosts     |
+|  /17   | 255.255.128.0     |  15 bits   | 128 (ở Octet 3) | 32,766 hosts     |
+|  /18   | 255.255.192.0     |  14 bits   | 64  (ở Octet 3) | 16,382 hosts     |
+|  /19   | 255.255.224.0     |  13 bits   | 32  (ở Octet 3) | 8,190 hosts      |
+|  /20   | 255.255.240.0     |  12 bits   | 16  (ở Octet 3) | 4,094 hosts      |
+|  /21   | 255.255.248.0     |  11 bits   | 8   (ở Octet 3) | 2,046 hosts      |
+|  /22   | 255.255.252.0     |  10 bits   | 4   (ở Octet 3) | 1,022 hosts  (*) |
+|  /23   | 255.255.254.0     |   9 bits   | 2   (ở Octet 3) | 510 hosts        |
++--------+-------------------+------------+-----------------+------------------+
+|  /24   | 255.255.255.0     |   8 bits   | 1   (ở Octet 3) | 254 hosts    (*) |
+|  /25   | 255.255.255.128   |   7 bits   | 128 (ở Octet 4) | 126 hosts        |
+|  /26   | 255.255.255.192   |   6 bits   | 64  (ở Octet 4) | 62 hosts     (*) |
+|  /27   | 255.255.255.224   |   5 bits   | 32  (ở Octet 4) | 30 hosts     (*) |
+|  /28   | 255.255.255.240   |   4 bits   | 16  (ở Octet 4) | 14 hosts         |
+|  /29   | 255.255.255.248   |   3 bits   | 8   (ở Octet 4) | 6 hosts          |
+|  /30   | 255.255.255.252   |   2 bits   | 4   (ở Octet 4) | 2 hosts (WAN)(*) |
++--------+-------------------+------------+-----------------+------------------+
+* Mẹo nhớ nhanh số cuối Subnet Mask (cộng dồn từ 128):
+  1 bit = 128 | 2 bit = 192 | 3 bit = 224 | 4 bit = 240
+  5 bit = 248 | 6 bit = 252 | 7 bit = 254 | 8 bit = 255
+
+* Các dải IPv4 Đặc biệt cần nhớ:
+  - Private IPv4 (RFC 1918):
+      + Lớp A: 10.0.0.0/8         (10.0.0.0    -> 10.255.255.255)
+      + Lớp B: 172.16.0.0/12      (172.16.0.0  -> 172.31.255.255)
+      + Lớp C: 192.168.0.0/16     (192.168.0.0 -> 192.168.255.255)
+  - Loopback (Test TCP/IP stack): 127.0.0.1 (IPv6 là ::1)
+  - Link-Local / APIPA (Khi lỗi DHCP): 169.254.0.0/16 (IPv6 là FE80::/10)
+  - Public IPv4 hay hỏi trong đề FE: 198.133.219.162
+
+
+PHẦN 3: CÁC BÀI TOÁN SUBNET THỰC TẾ TRONG ĐỀ THI FE & CÁCH CHIA VLSM (PE)
+--------------------------------------------------------------------------------
+[Bài 1] Mạng 192.168.1.0/27 có bao nhiêu usable IP?
+  -> h = 32 - 27 = 5 bit -> 2^5 - 2 = 30 IP.
+
+[Bài 2] Mạng 192.168.10.128/26 có bao nhiêu host?
+  -> h = 32 - 26 = 6 bit -> 2^6 - 2 = 62 hosts.
+
+[Bài 3] Mạng 172.16.128.0 với mask 255.255.252.0 có bao nhiêu host?
+  -> 255.255.252.0 là /22 -> h = 32 - 22 = 10 bit -> 2^10 - 2 = 1022 hosts.
+
+[Bài 4] Chia 192.168.1.0/24 thành 4 mạng con. Mạng con thứ 2 là gì?
+  -> Cần 4 mạng -> 2^s = 4 -> s = 2 bit -> Prefix mới /26 (255.255.255.192), bước nhảy 64.
+  -> Mạng 1: 192.168.1.0/26   (Host: .1 -> .62,   Broadcast: .63)
+  -> Mạng 2: 192.168.1.64/26  (Host: .65 -> .126, Broadcast: .127) -> ĐÁP ÁN: 192.168.1.64 - 255.255.255.192
+  -> Mạng 3: 192.168.1.128/26 (Host: .129 -> .190, Broadcast: .191)
+  -> Mạng 4: 192.168.1.192/26 (Host: .193 -> .254, Broadcast: .255)
+
+[Bài 5] Trong dải 10.16.10.0/24, chọn địa chỉ mạng con cho nhánh 25 hosts?
+  -> Cần 25 hosts -> dùng /27 (30 hosts, bước nhảy 32).
+  -> Các mạng /27 hợp lệ phải chia hết cho 32 (.0, .32, .64, .96, .128, .160, .192, .224).
+  -> Chọn: 10.16.10.64/27 (Loại 10.16.10.240/27 vì 240 không chia hết cho 32).
+
+[Bài 6] Tìm địa chỉ Broadcast của mạng 172.16.16.0/22?
+  -> /22 có bước nhảy = 4 ở Octet thứ 3.
+  -> Mạng hiện tại: 172.16.16.0 -> Mạng kế tiếp: 172.16.20.0.
+  -> Broadcast là địa chỉ ngay trước 172.16.20.0 -> ĐÁP ÁN: 172.16.19.255.
+
+[Bài 7] Chia Subnet IPv6 theo chữ số Hex:
+  - Quy tắc: IPv6 dài 128 bits = 8 cụm (Hextet). Mỗi cụm = 4 chữ số Hex = 16 bits.
+    => 1 chữ số Hex = 4 bits = 2^4 = 16 giá trị (từ 0 đến F).
+  - Nếu cấp 1 chữ số Hex cho phần Subnet -> Tạo tối đa 2^4 = 16 Subnets.
+  - Cho 2001:db8:0::/48 đổi sang /52 (mượn 4 bit = 1 chữ số Hex đầu của cụm thứ 4):
+    => Mạng con cuối cùng là: 2001:db8:0:f000::/52.
+
+[Quy trình Chia VLSM khi làm bài PE Packet Tracer]:
+  - Bước 1: Sắp xếp các mạng LAN/WAN theo số lượng Host GIẢM DẦN (từ lớn nhất đến nhỏ nhất).
+  - Bước 2: Chia lần lượt từ địa chỉ gốc. Mạng sau bắt đầu từ (Broadcast mạng trước + 1).
+    Ví dụ gốc 192.168.1.0/24 chia cho LAN A (50 hosts), LAN B (25 hosts), WAN (2 hosts):
+      1. LAN A (50 hosts) -> dùng /26 (bước nhảy 64):
+         Network: 192.168.1.0/26  | Mask: 255.255.255.192 | Host: .1 -> .62   | Bcast: .63
+      2. LAN B (25 hosts) -> dùng /27 (bước nhảy 32), bắt đầu tại .64:
+         Network: 192.168.1.64/27 | Mask: 255.255.255.224 | Host: .65 -> .94  | Bcast: .95
+      3. WAN   (2 hosts)  -> dùng /30 (bước nhảy 4), bắt đầu tại .96:
+         Network: 192.168.1.96/30 | Mask: 255.255.255.252 | Host: .97 -> .98  | Bcast: .99
+
+
+================================================================================
+PHẦN 4: TỔNG HỢP LỆNH CISCO IOS CLI (COPY-PASTE KHI THI PE & ÔN FE)
+================================================================================
+
+1. CÁC CHẾ ĐỘ (MODES) TRÊN CISCO IOS (Hay hỏi thứ tự trong FE: A5-B2-C4-D3)
+--------------------------------------------------------------------------------
+- User EXEC Mode:          Router>                  (Chế độ đầu tiên khi mới vào)
+- Privileged EXEC Mode:    Router#                  (Gõ "enable" từ User mode)
+- Global Config Mode:      Router(config)#          (Gõ "configure terminal" từ #)
+- Line Config Mode:        Router(config-line)#     (Gõ "line console 0" hoặc "line vty 0 4")
+- Interface Config Mode:   Router(config-if)#       (Gõ "interface g0/0")
+
+
+2. CẤU HÌNH CƠ BẢN & BẢO MẬT MẬT KHẨU (ROUTER & SWITCH)
+--------------------------------------------------------------------------------
+enable
+configure terminal
+
+! 1. Đặt tên thiết bị (Chú ý gõ đúng hoa/thường theo đề PE)
+hostname R1
+
+! 2. Tắt phân giải tên miền khi gõ sai lệnh (tránh bị treo CLI)
+no ip domain-lookup
+
+! 3. Đặt mật khẩu bảo vệ chế độ Privileged EXEC (#)
+enable secret class
+enable password cisco
+
+! 4. Đặt mật khẩu cổng Console
+line console 0
+ password cisco
+ login
+ logging synchronous
+ exit
+
+! 5. Đặt mật khẩu truy cập từ xa qua Telnet (VTY lines)
+line vty 0 4
+ password cisco
+ login
+ transport input all
+ exit
+
+! 6. Mã hóa toàn bộ mật khẩu plaintext trong file cấu hình
+service password-encryption
+
+! 7. Tạo thông báo cảnh báo trước khi đăng nhập (Banner MOTD)
+banner motd #Authorized Access Only!#
+
+
+3. CẤU HÌNH SSH ĐỂ QUẢN TRỊ TỪ XA AN TOÀN (CÓ MÃ HÓA ENCRYPTION)
+--------------------------------------------------------------------------------
+configure terminal
+hostname R1
+ip domain-name cisco.com
+
+! Tạo tài khoản cục bộ
+username admin secret cisco123
+
+! Tạo khóa mã hóa RSA (1024 hoặc 2048 bit)
+crypto key generate rsa
+1024
+
+! Bắt buộc dùng SSH v2 và đăng nhập bằng tài khoản local trên cổng VTY
+ip ssh version 2
+line vty 0 4
+ login local
+ transport input ssh
+ exit
+
+
+4. CẤU HÌNH ĐỊA CHỈ IPv4 & IPv6 TRÊN CỔNG ROUTER
+--------------------------------------------------------------------------------
+configure terminal
+
+! Bật định tuyến IPv6 (BẮT BUỘC nếu đề có yêu cầu IPv6)
+ipv6 unicast-routing
+
+! Cấu hình cổng GigabitEthernet 0/0 (hoặc g0/0/0)
+interface g0/0
+ description LAN-Connection-To-Switch1
+ ip address 192.168.1.1 255.255.255.0
+ ipv6 address 2001:db8:acad:1::1/64
+ ipv6 address fe80::1 link-local
+ no shutdown
+ exit
+
+
+5. CẤU HÌNH QUẢN TRỊ TỪ XA CHO SWITCH LAYER 2 (SVI VLAN 1 & DEFAULT GATEWAY)
+--------------------------------------------------------------------------------
+enable
+configure terminal
+hostname S1
+
+! Gán địa chỉ IP cho giao diện ảo SVI (Switch Virtual Interface)
+interface vlan 1
+ ip address 192.168.1.2 255.255.255.0
+ no shutdown
+ exit
+
+! Đặt Default Gateway để Switch giao tiếp được với các mạng ở xa
+ip default-gateway 192.168.1.1
+
+
+6. CẤU HÌNH ĐỊNH TUYẾN TĨNH (STATIC ROUTE & DEFAULT ROUTE)
+--------------------------------------------------------------------------------
+configure terminal
+
+! Cú pháp IPv4 Static Route: ip route [Mạng-Đích] [Subnet-Mask-Đích] [Next-Hop-IP hoặc Exit-Interface]
+ip route 192.168.2.0 255.255.255.0 10.0.0.2
+
+! Cú pháp IPv4 Default Route (Gateway of Last Resort):
+ip route 0.0.0.0 0.0.0.0 10.0.0.2
+
+! Cú pháp IPv6 Static Route & Default Route:
+ipv6 route 2001:db8:acad:2::/64 2001:db8:acad:a::2
+ipv6 route ::/0 2001:db8:acad:a::2
+
+
+7. LƯU CẤU HÌNH VÀO BỘ NHỚ NVRAM & CÁC LỆNH KIỂM TRA (VERIFY)
+--------------------------------------------------------------------------------
+! Quay về chế độ Privileged EXEC (#)
+end
+
+! Lưu cấu hình từ RAM (running-config) vào NVRAM (startup-config)
+copy running-config startup-config
+! (Hoặc gõ tắt: write memory / wr)
+
+! Các lệnh kiểm tra trạng thái:
+show ip interface brief          ! Xem tóm tắt tất cả các cổng, IPv4 và trạng thái up/down
+show ipv6 interface brief        ! Xem tóm tắt các cổng IPv6
+show ip route                    ! Xem bảng định tuyến IPv4
+show ipv6 route                  ! Xem bảng định tuyến IPv6
+show running-config              ! Xem cấu hình hiện tại trong RAM
+show startup-config              ! Xem cấu hình lưu trong NVRAM
+show mac-address-table           ! Xem bảng địa chỉ MAC trên Switch
+show arp                         ! Xem bảng ARP trên Router (Trên PC Windows gõ: arp -a)
+================================================================================

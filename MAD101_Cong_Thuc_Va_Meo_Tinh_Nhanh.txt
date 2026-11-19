@@ -1,0 +1,224 @@
+================================================================================
+   SỔ TAY MAD101 TOÀN TẬP: TÓM TẮT DỄ HIỂU THEO FILE THẦY TRẦN HOÀ PHÚ (39 TRANG)
+          + BÍ KÍP BẤM MÁY CASIO fx-580VN X & MẸO TÍNH NHANH PHÒNG THI FE
+================================================================================
+
+PHẦN 1: BÍ KÍP BẤM MÁY TÍNH CASIO fx-580VN X TRONG 5 GIÂY
+--------------------------------------------------------------------------------
+1. Tìm ƯCLN (GCD) và BCNN (LCM):
+   - GCD(a, b): Bấm [ALPHA] + [×] -> nhập a -> [SHIFT] + [)] (dấu ,) -> nhập b) -> [=]
+   - LCM(a, b): Bấm [ALPHA] + [÷] -> nhập a, b) -> [=]
+
+2. Phép chia có dư (Tìm Thương q và Số dư r):
+   - Số dương: Nhập a -> bấm [ALPHA] + [Phím phân số] (÷R) -> nhập d -> [=]
+   - SỐ ÂM (a < 0 chia cho d > 0): Số dư r LUÔN PHẢI KHÔNG ÂM (0 <= r < d)!
+     Ví dụ: -23 chia 5 -> lấy thương âm sâu hơn: -23 = 5 × (-5) + 2 => q = -5, r = 2.
+
+3. Phân tích ra Thừa số Nguyên tố (FACT):
+   - Nhập số N -> [=] -> bấm [SHIFT] + [° ' "] (FACT)
+
+4. Đổi Cơ số Tự động (Hệ 10 DEC <-> Hệ 2 BIN <-> Hệ 8 OCT <-> Hệ 16 HEX):
+   - Bấm [MENU] -> [3] (BASE-N) -> Nhập số ở DEC -> [=] -> bấm phím HEX / BIN / OCT.
+   * Nếu đổi sang cơ số lạ (như cơ số 6): Chia liên tiếp cho 6, lấy số dư đọc NGƯỢC từ dưới lên!
+     VD (Mục 4.7 Thầy Phú): Đổi 50 sang hệ 6:
+       50 ÷ 6 = 8 dư 2  |  8 ÷ 6 = 1 dư 2  |  1 ÷ 6 = 0 dư 1  => Đọc ngược: (122)_6.
+
+5. Tính Tổ hợp C(n, r), Chỉnh hợp P(n, r) và Tổng Sigma:
+   - C(n, r): Nhập n -> [SHIFT] + [÷] -> nhập r -> [=]
+   - P(n, r): Nhập n -> [SHIFT] + [×] -> nhập r -> [=]
+   - Tổng Sigma: Bấm [SHIFT] + [x]
+
+
+================================================================================
+PHẦN 2: TÓM TẮT CHI TIẾT & DỄ HIỂU NHẤT 8 CHƯƠNG TRONG FILE THẦY TRẦN HOÀ PHÚ
+================================================================================
+
+CHƯƠNG 1: FOUNDATIONS - LOGIC, LƯỢNG TỪ, LẬP LUẬN HỢP LỆ & BIT STRINGS (Mục 1.1 -> 1.12)
+--------------------------------------------------------------------------------
+1. Các phép toán mệnh đề & Bảng chân trị:
+   - Phủ định (¬p): Đảo T <-> F.
+   - Hội (p ∧ q - AND): Đúng khi CẢ HAI cùng Đúng.
+   - Tuyển (p ∨ q - OR): Sai khi CẢ HAI cùng Sai.
+   - Kéo theo (p -> q): "Nếu p thì q" (p là điều kiện ĐỦ của q; q là điều kiện CẦN của p).
+     => Chỉ SAI duy nhất khi p = True và q = False!
+   - Tương đương (p <-> q): "p khi và chỉ khi q" (điều kiện cần và đủ). Đúng khi p, q CÙNG chân trị.
+   - Tuyển loại trừ (p ⊕ q - XOR): Đúng khi p, q KHÁC chân trị.
+   - Tautology (Hằng đúng): Luôn True | Contradiction (Hằng sai): Luôn False.
+
+2. Các Luật Tương đương Logic thông dụng (Mục 1.5 - 1.6):
+   - Phủ định kép:      ¬(¬p) ≡ p
+   - Luật De Morgan:    ¬(p ∧ q) ≡ ¬p ∨ ¬q    và    ¬(p ∨ q) ≡ ¬p ∧ ¬q
+   - Biến đổi kéo theo: p -> q ≡ ¬p ∨ q       và    p -> q ≡ ¬q -> ¬p (Phản đảo)
+   - Phủ định kéo theo: ¬(p -> q) ≡ p ∧ ¬q
+   - Tương đương:       p <-> q ≡ (p ∧ q) ∨ (¬p ∧ ¬q)
+   - Luật hấp thụ:      p ∨ (p ∧ q) ≡ p       và    p ∧ (p ∨ q) ≡ p
+   - Đơn vị trung hòa:  p ∧ TRUE ≡ p          và    p ∨ FALSE ≡ p
+   - Thống trị:         p ∧ FALSE ≡ FALSE     và    p ∨ TRUE ≡ TRUE
+
+3. Lượng từ ∃, ∀ & Phủ định lượng từ (Mục 1.7 - 1.9):
+   - ∃x ∈ S, P(x): Đúng nếu có ÍT NHẤT 1 phần tử x thỏa mãn P(x).
+   - ∀x ∈ S, P(x): Đúng nếu TẤT CẢ phần tử x đều thỏa mãn P(x).
+   - Phủ định: ¬(∀x P(x)) ≡ ∃x ¬P(x)   và   ¬(∃x P(x)) ≡ ∀x ¬P(x).
+
+4. Bảng 7 Lập luận Hợp lệ - Valid Arguments (Mục 1.10 - Bắt buộc thuộc tên!):
+   (1) Modus Ponens:           Nếu (p -> q) và p đúng       => q đúng.
+   (2) Modus Tollens:          Nếu (p -> q) và ¬q đúng      => ¬p đúng.
+   (3) Disjunctive Syllogism:  Nếu (p ∨ q) và ¬p đúng       => q đúng.
+   (4) Hypothetical Syllogism: Nếu (p -> q) và (q -> r)     => (p -> r) đúng.
+   (5) Conjunction:            Nếu p đúng và q đúng         => (p ∧ q) đúng.
+   (6) Simplification:         Nếu (p ∧ q) đúng             => p đúng (hoặc q đúng).
+   (7) Addition:               Nếu p đúng                   => (p ∨ q) đúng.
+
+5. Bit Strings (Mục 1.11 - 1.12):
+   - Bitwise OR (∨):  1011 ∨ 1100 = 1111 (Có ít nhất một số 1 thì ra 1)
+   - Bitwise AND (∧): 1011 ∧ 1100 = 1000 (Cả hai cùng là 1 thì ra 1)
+   - Bitwise XOR (⊕): 1011 ⊕ 1100 = 0111 (Hai bit khác nhau thì ra 1)
+
+
+CHƯƠNG 2: TẬP HỢP, HÀM SỐ, HÀM NGƯỢC/HỢP, DÃY SỐ & TỔNG (Mục 2.1 -> 2.15)
+--------------------------------------------------------------------------------
+1. Tập hợp, Power Set & Tích Descartes:
+   - Tập con: A ⊂ B <=> ∀x (x ∈ A -> x ∈ B).
+   - Tập lũy thừa P(A): Tập chứa mọi tập con của A. Công thức: |P(A)| = 2^|A|.
+   - Tích Descartes: A × B = {(a, b) | a ∈ A, b ∈ B} => |A × B| = |A| · |B|.
+   - Phép toán: Hợp (A ∪ B), Giao (A ∩ B), Phần bù/Hiệu (A - B: thuộc A nhưng không thuộc B).
+
+2. Hàm số Đơn ánh, Toàn ánh, Song ánh (f: A -> B với |A| = m, |B| = n):
+   - Đơn ánh (Injective):  f(x1) = f(x2) => x1 = x2. Số hàm = P(n, m) = n! / (n - m)!.
+   - Toàn ánh (Surjective): ∀y ∈ B, ∃x ∈ A sao cho f(x) = y.
+   - Song ánh (Bijective):  Vừa đơn ánh vừa toàn ánh (m = n, số hàm = n!).
+   - Tổng số hàm bất kỳ từ A sang B = n^m.
+
+3. Cách tìm Hàm ngược f^-1(y) & Hàm hợp (g o f)(x) (Mục 2.9 - 2.10):
+   - Hàm ngược f^-1 chỉ tồn tại khi f là SONG ÁNH!
+     Cách tìm: Đặt y = f(x) rồi rút x theo y.
+     + VD1: f(x) = 2x + 3  =>  y = 2x + 3  =>  x = (y - 3)/2  =>  f^-1(y) = (y - 3)/2.
+     + VD2: f(x) = e^x     =>  f^-1(y) = ln(y).
+   - Hàm hợp (g o f)(x) = g(f(x)) (Thay biểu thức f(x) vào chữ x của hàm g):
+     + VD1: f(x) = 2x + 1, g(x) = x^2 => (g o f)(x) = (2x + 1)^2; còn (f o g)(x) = 2x^2 + 1.
+     + VD2: f(x) = x^2, g(x) = √x     => (g o f)(x) = √(x^2) = |x|; còn (f o g)(x) = (√x)^2 = x.
+
+4. Hàm Sàn ⌊x⌋, Hàm Trần ⌈x⌉ & Tổng Kép ∑∑ (Mục 2.12 & 2.15):
+   - ⌊3.7⌋ = 3, ⌈3.7⌉ = 4  |  Số âm: ⌊-3.7⌋ = -4, ⌈-3.7⌉ = -3.
+   - Ví dụ Tổng kép (Mục 2.15):
+     ∑(i=1..3) ∑(j=1..3) (i + j) = ∑(i=1..3) [(i+1) + (i+2) + (i+3)]
+                                 = ∑(i=1..3) (3i + 6) = 9 + 12 + 15 = 36.
+
+
+CHƯƠNG 3: 6 THUẬT TOÁN CỐT LÕI & ĐỘ PHỨC TẠP BIG-O / Ω / Θ (Mục 3.1 -> 3.10)
+--------------------------------------------------------------------------------
+1. Sáu Thuật toán trong file thầy Phú:
+   - (3.1) Find Maximum: Duyệt từ đầu đến cuối cập nhật max => O(n).
+   - (3.2) Linear Search: Duyệt tuần tự tìm x, thấy trả về vị trí i, không thấy trả về 0 => O(n).
+   - (3.3) Binary Search (Dãy đã tăng dần): Chia đôi m = ⌊(i + j)/2⌋. Nếu x > a_m thì i = m + 1,
+           ngược lại j = m => O(log n).
+   - (3.4) Bubble Sort (Sắp xếp nổi bọt - O(n^2)): So sánh 2 số kề nhau (a_j > a_(j+1) thì đổi chỗ).
+           Sau mỗi bước i, số lớn nhất nổi về cuối dãy.
+           VD dãy [5, 3, 8, 4, 2]: Bước 1 -> [3, 5, 4, 2, 8]; Bước 2 -> [3, 4, 2, 5, 8]; Bước 3 -> [3, 2, 4, 5, 8]; Bước 4 -> [2, 3, 4, 5, 8].
+   - (3.5) Insertion Sort (Sắp xếp chèn - O(n^2)): Tại vòng lặp j (từ 2 đến n), lấy a_j chèn vào đúng
+           vị trí trong đoạn đầu đã sắp xếp.
+           VD dãy [5, 3, 4, 1, 2]: Vòng 1 (j=2) -> [3, 5, 4, 1, 2]; Vòng 2 (j=3) -> [3, 4, 5, 1, 2]; Vòng 3 (j=4) -> [1, 3, 4, 5, 2]; Vòng 4 (j=5) -> [1, 2, 3, 4, 5].
+   - (3.6) Greedy Change-Making (Đổi tiền tham lam):
+           Với các mệnh giá c1 > c2 > ... > cr, ở mỗi bước luôn lấy tối đa số đồng xu mệnh giá LỚN NHẤT.
+           VD: Đổi n = 23 với mệnh giá 10, 5, 2, 1 => Lấy 2 xu 10 + 0 xu 5 + 1 xu 2 + 1 xu 1 = 4 xu!
+
+2. Big-O, Big-Omega (Ω) & Big-Theta (Θ):
+   - Big-O (Upper bound / Tệ nhất - Worst case):       |f(x)| <= C · g(x)
+   - Big-Omega Ω (Lower bound / Tốt nhất - Best case): |f(x)| >= C · g(x)
+   - Big-Theta Θ (Tight bound / Trung bình):           C1·g(x) <= |f(x)| <= C2·g(x)
+   - Thứ tự: O(1) < O(log n) < O(n) < O(n log n) < O(n^2) < O(2^n) < O(n!).
+
+
+CHƯƠNG 4: LÝ THUYẾT SỐ, SỐ GIẢ NGẪU NHIÊN & MÃ HÓA (Mục 4.1 -> 4.16)
+--------------------------------------------------------------------------------
+1. Chia hết, Euclid & GCD/LCM:
+   - a = b·q + r (0 <= r < b).
+   - gcd(a, b) · lcm(a, b) = a · b. Hai số nguyên tố cùng nhau (Coprime) khi gcd(a, b) = 1.
+   - Thuật toán Euclid: gcd(a, b) = gcd(b, a mod b). VD: gcd(48, 18) = gcd(18, 12) = gcd(12, 6) = 6.
+
+2. Số giả ngẫu nhiên - Pseudorandom Numbers (Mục 4.15):
+   - Công thức:  x_(n+1) = (a · x_n + c) mod m
+   - Ví dụ Thầy Phú: Cho a = 5, c = 3, m = 16, x0 = 7:
+     + x1 = (5×7 + 3) mod 16 = 38 mod 16 = 6
+     + x2 = (5×6 + 3) mod 16 = 33 mod 16 = 1
+     => Dãy số: 7, 6, 1, ...
+
+3. Mã hóa Bảng chữ cái tiếng Anh (Mục 4.16):
+   - Bảng quy đổi (A = 0, B = 1, C = 2 ... Z = 25):
+     A=0  B=1  C=2  D=3  E=4  F=5  G=6  H=7  I=8  J=9  K=10 L=11 M=12
+     N=13 O=14 P=15 Q=16 R=17 S=18 T=19 U=20 V=21 W=22 X=23 Y=24 Z=25
+   - Ví dụ Thầy Phú: Hàm mã hóa f(x) = (3x + 10) mod 26. Mã hóa từ "STOP":
+     + S = 18 => f(18) = (3×18 + 10) mod 26 = 64 mod 26 = 12 => M
+     + T = 19 => f(19) = (3×19 + 10) mod 26 = 67 mod 26 = 15 => P
+     + O = 14 => f(14) = (3×14 + 10) mod 26 = 52 mod 26 = 0  => A
+     + P = 15 => f(15) = (3×15 + 10) mod 26 = 55 mod 26 = 3  => D
+     => Bản mã là: "MPAD".
+
+
+CHƯƠNG 5 & 6: QUY NẠP, ĐỆ QUY, MERGE SORT, ĐẾM & ĐỊNH LÝ MASTER (Mục 5.1 -> 6.5)
+--------------------------------------------------------------------------------
+1. Đếm chuỗi nhị phân độ dài n KHÔNG CÓ 2 số 1 liên tiếp (Mục 6.4):
+   - Hệ thức truy hồi: a_n = a_(n-1) + a_(n-2) với n >= 3.
+   - Nhớ thuộc dãy giá trị:
+     n = 1 => a1 = 2  (0, 1)
+     n = 2 => a2 = 3  (00, 01, 10)
+     n = 3 => a3 = 5
+     n = 4 => a4 = 8
+     n = 5 => a5 = 13
+     n = 6 => a6 = 21
+
+2. Hai Công thức Định lý Master trong File Thầy Phú (Mục 6.5):
+   * Dạng 1: f(n) = a·f(n/b) + c
+     - Độ phức tạp: O(log n) nếu a = 1;  O(n^(log_b a)) nếu a > 1.
+     - Công thức tính chính xác khi n = b^k:
+         f(n) = C1 · n^(log_b a) + C2
+       với:  C1 = f(1) + c / (a - 1)   và   C2 = -c / (a - 1).
+   * Dạng 2: f(n) = a·f(n/b) + c·n^d
+     - Nếu a < b^d  =>  O(n^d)
+     - Nếu a = b^d  =>  O(n^d · log n)
+     - Nếu a > b^d  =>  O(n^(log_b a))
+
+
+CHƯƠNG 7: GRAPH - LÝ THUYẾT ĐỒ THỊ (Mục 7.1 -> 7.27)
+--------------------------------------------------------------------------------
+1. Phân biệt 4 loại đồ thị:
+   - Simple Graph (Đồ thị đơn): Vô hướng, không cạnh bội, không khuyên (self-loop).
+   - Multigraph (Đồ thị đa): Có cạnh bội nối cùng 1 cặp đỉnh.
+   - Pseudograph (Đồ thị giả): Có cả cạnh bội VÀ vòng tự khép (self-loop).
+   - Directed Graph (Đồ thị có hướng): ∑ deg⁻(v) = ∑ deg⁺(v) = |E|.
+
+2. Định lý Bắt tay & Các đồ thị đặc biệt:
+   - Handshaking Theorem: ∑ deg(v) = 2|E|.
+   - K_n: n đỉnh, n(n-1)/2 cạnh | C_n: n đỉnh, n cạnh | Q_n: 2^n đỉnh, n·2^(n-1) cạnh | K_(m,n): m·n cạnh.
+   - Đồ thị lưỡng phân (Bipartite): Tô được bằng 2 màu sao cho 2 đỉnh kề nhau khác màu.
+   - Đỉnh cắt (Cut Vertex): Đỉnh mà khi xóa đi làm đồ thị mất tính liên thông.
+   - Liên thông mạnh (Strongly connected): Có đường đi có hướng giữa mọi cặp đỉnh theo cả 2 chiều.
+   - Liên thông yếu (Weakly connected): Liên thông khi bỏ qua hướng của các cạnh.
+   - Đường đi Euler: Liên thông + có ĐÚNG 2 đỉnh bậc LẺ.
+   - Chu trình Euler: Liên thông + TẤT CẢ các đỉnh đều có bậc CHẴN.
+   - Đường đi / Chu trình Hamilton: Đi qua MỖI ĐỈNH đúng 1 lần.
+
+
+CHƯƠNG 8: CÂY (TREE), DUYỆT CÂY, BST, HUFFMAN & MST (Mục 8.1 -> 8.21)
+--------------------------------------------------------------------------------
+1. Công thức Cây m-ary đầy đủ (Full m-ary Tree):
+   - n = e + 1  (Số đỉnh = Số cạnh + 1)
+   - n = i + l  (Số đỉnh = Số nút trong + Số nút lá)
+   - n = m·i + 1  và  l = (m - 1)·i + 1.
+
+2. Level, Height, Cây cân bằng & Duyệt cây:
+   - Level của đỉnh: Khoảng cách (số cạnh) từ gốc đến đỉnh đó.
+   - Height (h): Level lớn nhất của cây.
+   - Cây cân bằng (Balanced Tree): Mọi nút lá đều có level là h hoặc (h - 1).
+   - Duyệt cây nhị phân:
+     + Preorder (NLR):  Node -> Left -> Right
+     + Inorder (LNR):   Left -> Node -> Right  (Duyệt BST theo Inorder cho dãy tăng dần)
+     + Postorder (LRN): Left -> Right -> Node
+
+3. Mã tiền tố (Prefix Code), Huffman & Cây khung nhỏ nhất (MST):
+   - Prefix Code: Không có mã nào là phần mở đầu (tiền tố) của mã khác.
+   - Huffman Coding: Mỗi bước luôn gộp 2 nút có tần suất NHỎ NHẤT.
+   - Cây khung (Spanning Tree): Chứa đủ |V| đỉnh và đúng |V| - 1 cạnh, liên thông, không chu trình.
+   - Prim (MST): Bắt đầu từ 1 đỉnh, mở rộng bằng cách chọn cạnh nhỏ nhất nối đỉnh trong cây với ngoài cây.
+   - Kruskal (MST): Sắp xếp tất cả các cạnh tăng dần, thêm cạnh nhỏ nhất nếu không tạo chu trình.
+================================================================================

@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NWC204 Study Hub — Computer Networking (FPT University)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-inner">
+      <a href="#" class="brand" onclick="switchTab('dashboard'); return false;">
+        <div class="brand-logo">NWC</div>
+        <div>
+          <span class="brand-title">NWC204 Study Hub</span>
+          <span class="brand-subtitle">Computer Networking • Ôn tập Lý thuyết, PE Packet Tracer & FE</span>
+        </div>
+      </a>
+
+      <nav class="nav-tabs" aria-label="Điều hướng chính">
+        <button class="nav-tab active" data-tab="dashboard">📊 Tổng quan</button>
+        <button class="nav-tab" data-tab="cheatsheet">🎯 Trọng tâm Cần nhớ</button>
+        <button class="nav-tab" data-tab="theory">📚 Lý thuyết & OSI</button>
+        <button class="nav-tab" data-tab="subnet">🧮 Chia Subnet & VLSM</button>
+        <button class="nav-tab" data-tab="cli">💻 Lệnh Cisco CLI (PE)</button>
+        <button class="nav-tab" data-tab="flashcards">🃏 Flashcards</button>
+        <button class="nav-tab" data-tab="quiz">📝 Trắc nghiệm & Thi thử FE</button>
+      </nav>
+
+      <div class="header-actions">
+        <a href="mad101.html" class="icon-btn" style="text-decoration:none;" title="Chuyển sang trang học môn MAD101 (Discrete Mathematics)">📐 Sang môn MAD101</a>
+        <div class="font-size-group" title="Điều chỉnh kích thước chữ trên toàn trang">
+          <button class="font-btn" data-scale="0.95" onclick="setFontScale(0.95)">A-</button>
+          <button class="font-btn active" data-scale="1.05" onclick="setFontScale(1.05)">A</button>
+          <button class="font-btn" data-scale="1.18" onclick="setFontScale(1.18)">A+</button>
+        </div>
+        <button class="icon-btn" id="open-custom-modal-btn" title="Thêm câu hỏi hoặc Flashcard của bạn">➕ Thêm câu hỏi</button>
+        <button class="icon-btn" id="theme-toggle-btn" title="Đổi giao diện Sáng / Tối">☀️ Light</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-container">
+    <!-- ==================== TAB 1: DASHBOARD ==================== -->
+    <section class="tab-panel active" id="tab-dashboard">
+      <!-- Quick Global Search -->
+      <div class="card" style="margin-bottom:1.5rem;">
+        <div class="card-header" style="margin-bottom:0.65rem;">
+          <div class="card-title">🔍 Tra cứu nhanh toàn bộ kiến thức NWC204</div>
+          <span class="badge">Port • Giao thức • Lệnh Cisco • Câu hỏi FE</span>
+        </div>
+        <input
+          type="text"
+          id="global-search-input"
+          class="form-control"
+          placeholder="Nhập từ khóa bất kỳ: ví dụ 'ARP', 'OSPF', 'port 53', 'ssh', '169.254', '3-way handshake', 'copy run start'..."
+        />
+        <div
+          id="global-search-results"
+          style="display:none;margin-top:0.75rem;background:var(--bg-input);border:1px solid var(--border);border-radius:8px;max-height:340px;overflow-y:auto;"
+        ></div>
+      </div>
+
+      <!-- Progress Stats -->
+      <div class="grid-4">
+        <div class="card stat-card">
+          <span class="stat-label">📚 Chương lý thuyết đã học</span>
+          <div class="stat-value" id="stat-chapters-val">0/7</div>
+          <div class="stat-sub" id="stat-chapters-sub">Hoàn thành 0% chương trình</div>
+          <div class="progress-bar"><div class="progress-fill" id="stat-chapters-bar" style="width:0%"></div></div>
+        </div>
+
+        <div class="card stat-card">
+          <span class="stat-label">🃏 Flashcards đã thuộc</span>
+          <div class="stat-value" id="stat-fc-val">0/18</div>
+          <div class="stat-sub" id="stat-fc-sub">Đã thuộc 0% thuật ngữ</div>
+          <div class="progress-bar"><div class="progress-fill" id="stat-fc-bar" style="width:0%"></div></div>
+        </div>
+
+        <div class="card stat-card">
+          <span class="stat-label">🏆 Điểm Thi thử FE cao nhất</span>
+          <div class="stat-value" id="stat-quiz-val">0%</div>
+          <div class="stat-sub" id="stat-quiz-sub">0 lần làm bài</div>
+          <div class="progress-bar"><div class="progress-fill" id="stat-quiz-bar" style="width:0%"></div></div>
+        </div>
+
+        <div class="card stat-card">
+          <span class="stat-label">🔥 Câu hỏi cần ôn lại (Làm sai)</span>
+          <div class="stat-value" id="stat-wrong-val" style="color:var(--warning);">0</div>
+          <div class="stat-sub">Tự động lưu khi làm trắc nghiệm</div>
+          <div style="margin-top:0.5rem;">
+            <button class="btn btn-secondary btn-sm" onclick="switchTab('quiz')">Ôn ngay &rarr;</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- FE Past Exams Breakdown -->
+      <div class="card" id="fe-analysis-container" style="margin-bottom:1.5rem;"></div>
+
+      <!-- Quick Study Modules & Exam Strategy -->
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">🚀 Lộ trình 5 bước chinh phục NWC204</h2>
+            <button class="btn btn-sm" onclick="switchTab('cheatsheet')">🎯 Mở Sổ tay Trọng tâm FE &rarr;</button>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:0.75rem;font-size:0.9rem;">
+            <div class="theory-box" style="display:flex;justify-content:space-between;align-items:center;gap:0.75rem;">
+              <div>
+                <strong>1. Nắm chắc Mô hình OSI 7 tầng & TCP/IP</strong>
+                <div style="color:var(--text-secondary);font-size:0.83rem;">Phân biệt PDU (Bits, Frame, Packet, Segment), địa chỉ MAC vs IP, thiết bị từng tầng.</div>
+              </div>
+              <button class="btn btn-secondary btn-sm" onclick="switchTab('theory')">Học ngay</button>
+            </div>
+            <div class="theory-box" style="display:flex;justify-content:space-between;align-items:center;gap:0.75rem;">
+              <div>
+                <strong>2. Thành thạo Chia Subnet IPv4, VLSM & IPv6</strong>
+                <div style="color:var(--text-secondary);font-size:0.83rem;">Tính nhanh Network ID, Broadcast, Usable Hosts trong 15 giây bằng bước nhảy Magic Number.</div>
+              </div>
+              <button class="btn btn-secondary btn-sm" onclick="switchTab('subnet')">Thực hành</button>
+            </div>
+            <div class="theory-box" style="display:flex;justify-content:space-between;align-items:center;gap:0.75rem;">
+              <div>
+                <strong>3. Thuộc lòng bảng Port Numbers & Giao thức</strong>
+                <div style="color:var(--text-secondary);font-size:0.83rem;">TCP vs UDP, 3-Way Handshake, DNS (A, AAAA, MX), DHCP (DORA), HTTP/FTP/SMTP/IMAP.</div>
+              </div>
+              <button class="btn btn-secondary btn-sm" onclick="switchTab('flashcards')">Lật thẻ</button>
+            </div>
+            <div class="theory-box" style="display:flex;justify-content:space-between;align-items:center;gap:0.75rem;">
+              <div>
+                <strong>4. Ăn trọn điểm PE Cisco Packet Tracer</strong>
+                <div style="color:var(--text-secondary);font-size:0.83rem;">Cấu hình hostname, mật khẩu, SSH, IPv4/IPv6 interface, SVI VLAN 1, Static Route & lưu NVRAM.</div>
+              </div>
+              <button class="btn btn-secondary btn-sm" onclick="switchTab('cli')">Xem CLI</button>
+            </div>
+            <div class="theory-box" style="display:flex;justify-content:space-between;align-items:center;gap:0.75rem;">
+              <div>
+                <strong>5. Luyện đề Trắc nghiệm FE có giải thích chi tiết</strong>
+                <div style="color:var(--text-secondary);font-size:0.83rem;">Chế độ luyện tập từng câu và chế độ Thi thử bấm giờ tự động lọc câu hay sai.</div>
+              </div>
+              <button class="btn btn-sm" onclick="switchTab('quiz')">Thi thử FE</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">⚡ Bảng Tóm tắt Siêu Tốc trước giờ thi FE</h2>
+            <button class="btn btn-secondary btn-sm" id="reset-progress-btn">Đặt lại tiến độ</button>
+          </div>
+          <div class="table-wrap" style="margin-bottom:0.9rem;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Prefix</th>
+                  <th>Subnet Mask</th>
+                  <th>Bước nhảy</th>
+                  <th>Số Host (2^h - 2)</th>
+                </tr>
+              </thead>
+              <tbody class="mono">
+                <tr><td>/24</td><td>255.255.255.0</td><td>256 (Octet 4)</td><td>254 hosts</td></tr>
+                <tr><td>/25</td><td>255.255.255.128</td><td>128</td><td>126 hosts</td></tr>
+                <tr><td>/26</td><td>255.255.255.192</td><td>64</td><td>62 hosts</td></tr>
+                <tr><td>/27</td><td>255.255.255.224</td><td>32</td><td>30 hosts</td></tr>
+                <tr><td>/28</td><td>255.255.255.240</td><td>16</td><td>14 hosts</td></tr>
+                <tr><td>/29</td><td>255.255.255.248</td><td>8</td><td>6 hosts</td></tr>
+                <tr><td>/30</td><td>255.255.255.252</td><td>4</td><td>2 hosts (WAN P2P)</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="exam-tip" style="margin-top:0;">
+            <strong>📌 Nhắc nhở quan trọng:</strong>
+            <ul style="padding-left:1.1rem;margin-top:0.25rem;">
+              <li><strong>Private IPv4:</strong> <code>10.0.0.0/8</code> | <code>172.16.0.0/12</code> (172.16 &rarr; 172.31) | <code>192.168.0.0/16</code>.</li>
+              <li><strong>APIPA (DHCP lỗi):</strong> <code>169.254.0.0/16</code> • <strong>Loopback:</strong> <code>127.0.0.1</code> (IPv6 là <code>::1/128</code>).</li>
+              <li><strong>IPv6 Link-Local:</strong> <code>FE80::/10</code> (không định tuyến qua Router) • <strong>Global Unicast:</strong> <code>2000::/3</code>.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 1.5: CORE MUST-REMEMBER CHEAT SHEET ==================== -->
+    <section class="tab-panel" id="tab-cheatsheet">
+      <!-- Top Header & Instant Filter -->
+      <div class="card" style="margin-bottom:1.5rem;">
+        <div class="card-header" style="margin-bottom:0.85rem;">
+          <div>
+            <h2 class="card-title">🎯 Sổ tay Tổng hợp Kiến thức Trọng tâm Cần nhớ (Đúc kết từ 6 Đề FE)</h2>
+            <p style="font-size:0.95rem;color:var(--text-secondary);margin-top:0.25rem;">
+              Nơi tổng hợp toàn bộ <strong>Từ khóa &rarr; Đáp án khoanh ngay</strong>, <strong>8 câu Ghép nối (Matching)</strong>, <strong>Số liệu Subnetting/IPv6</strong> và <strong>Lệnh Cisco CLI</strong> xuất hiện lặp đi lặp lại trong 6 đề thi thật.
+            </p>
+          </div>
+          <span class="badge badge-warning">Học tủ 100% Trúng</span>
+        </div>
+        <input
+          type="text"
+          id="cheatsheet-filter-input"
+          class="form-control"
+          placeholder="🔎 Gõ từ khóa để lọc nhanh trong trang Trọng tâm (VD: 'matching', 'SLAAC', 'NVRAM', '1022', 'auto-MDIX', 'ARP', 'mode')..."
+        />
+      </div>
+
+      <!-- SECTION 1: 8 MATCHING QUESTIONS -->
+      <div class="card cheatsheet-section" style="margin-bottom:1.5rem;">
+        <div class="card-header">
+          <div>
+            <h3 class="card-title">🧩 1. Tổng hợp 8 Câu Ghép Nối (Matching) Đã Ra Thi — Thuộc lòng ăn điểm 100%</h3>
+            <p style="font-size:0.9rem;color:var(--text-secondary);">Các câu Matching trong đề FE giữ nguyên thứ tự A, B, C, D và 1, 2, 3, 4. Chỉ cần nhớ quy tắc ghép dưới đây:</p>
+          </div>
+          <span class="badge badge-success">8 Câu Matching</span>
+        </div>
+
+        <div class="grid-2">
+          <div class="theory-box cs-item">
+            <h4>① Thứ tự đóng gói gói tin Telnet gửi đi (FA25_RE - Q11)</h4>
+            <ul>
+              <li><strong>A. First (Bước 1):</strong> <code>4</code> — Telnet-formatted data provided to next layer</li>
+              <li><strong>B. Second (Bước 2):</strong> <code>2</code> — The TCP header is added (Tầng 4)</li>
+              <li><strong>C. Third (Bước 3):</strong> <code>1</code> — The IP header is added (Tầng 3)</li>
+              <li><strong>D. Fourth (Bước 4):</strong> <code>3</code> — The Ethernet header is added (Tầng 2)</li>
+            </ul>
+            <div class="exam-tip" style="margin-top:0.65rem;">👉 Đáp án khoanh ngay: <strong><code>1C - 2B - 3D - 4A</code></strong></div>
+          </div>
+
+          <div class="theory-box cs-item">
+            <h4>② Ba kỹ thuật song hành IPv4 & IPv6 (FA25_RE - Q14)</h4>
+            <ul>
+              <li><strong>A. IPv4 & IPv6 coexist in same network:</strong> <code>4. dual-stack</code></li>
+              <li><strong>B. IPv6 packet transported inside IPv4 packet:</strong> <code>3. tunneling</code></li>
+              <li><strong>C. IPv6 packets converted into IPv4 & vice versa:</strong> <code>2. translation</code> (NAT64)</li>
+            </ul>
+            <div class="exam-tip" style="margin-top:0.65rem;">👉 Đáp án khoanh ngay: <strong><code>A4 - B3 - C2</code></strong></div>
+          </div>
+
+          <div class="theory-box cs-item">
+            <h4>③ Thứ tự đi qua các Mode IOS để đặt pass Console (FA25_FE85 - Q45)</h4>
+            <ul>
+              <li><strong>A. first mode:</strong> <code>5. user EXEC mode</code> (<code>Switch&gt;</code>)</li>
+              <li><strong>B. second mode:</strong> <code>2. privileged EXEC mode</code> (<code>Switch#</code>)</li>
+              <li><strong>C. third mode:</strong> <code>4. global configuration mode</code> (<code>Switch(config)#</code>)</li>
+              <li><strong>D. final mode:</strong> <code>3. line configuration mode</code> (<code>Switch(config-line)#</code>)</li>
+            </ul>
+            <div class="exam-tip" style="margin-top:0.65rem;">👉 Đáp án khoanh ngay: <strong><code>A5 - B2 - C4 - D3</code></strong></div>
+          </div>
+
+          <div class="theory-box cs-item">
+            <h4>④ Ghép Lệnh CLI với Mode nhập lệnh (Set 1 - Q10)</h4>
+            <ul>
+              <li><strong>A. <code>login</code>:</strong> <code>5. R1(config-line)#</code></li>
+              <li><strong>B. <code>service password-encryption</code>:</strong> <code>1. R1(config)#</code></li>
+              <li><strong>C. <code>ip address 192.168.4.4...</code>:</strong> <code>6. R1(config-if)#</code></li>
+              <li><strong>D. <code>copy running-config startup-config</code>:</strong> <code>4. R1#</code></li>
+              <li><strong>E. <code>enable</code>:</strong> <code>2. R1&gt;</code></li>
+            </ul>
+            <div class="exam-tip" style="margin-top:0.65rem;">👉 Đáp án khoanh ngay: <strong><code>A5 - B1 - C6 - D4 - E2</code></strong></div>
+          </div>
+
+          <div class="theory-box cs-item">
+            <h4>⑤ Chọn Môi trường truyền dẫn theo tình huống (Set 2 - Q34 & SU26 - Q33)</h4>
+            <ul>
+              <li><strong>A. Copper Cables (Cáp đồng):</strong> <code>3</code> (Horizontal cabling) &amp; <code>5</code> (Desktop PCs in office)</li>
+              <li><strong>B. Fiber Optic (Cáp quang):</strong> <code>1</code> (Enterprise backbone) &amp; <code>6</code> (Long-haul networks)</li>
+              <li><strong>C. Wireless (Không dây):</strong> <code>2</code> (Coffee shop guest) &amp; <code>4</code> (Hospital waiting rooms)</li>
+            </ul>
+            <div class="exam-tip" style="margin-top:0.65rem;">👉 Đáp án khoanh ngay: <strong><code>3A - 5A - 1B - 6B - 2C - 4C</code></strong></div>
+          </div>
+
+          <div class="theory-box cs-item">
+            <h4>⑥ Ghép Yêu cầu mạng tin cậy (FA25_RE - Q22) &amp; Lệnh bảo mật (SU26 - Q21)</h4>
+            <ul>
+              <li><strong>Kiến trúc mạng tin cậy:</strong> <code>A. fault tolerance</code> = <code>2</code> (Redundant links) | <code>B. scalability</code> = <code>4</code> (Expand network) | <code>C. security</code> = <code>1</code> (Protect unauthorized access) &rarr; <strong><code>A2 - B4 - C1</code></strong></li>
+              <li><strong>Lệnh cơ bản Router:</strong> <code>A. security on console</code> = <code>3</code> (<code>(config-line)# password class</code>) | <code>B. message when accessed</code> = <code>5</code> (<code>banner motd #</code>) | <code>C. name on router</code> = <code>1</code> (<code>hostname CL1</code>) &rarr; <strong><code>A3 - B5 - C1</code></strong></li>
+            </ul>
+          </div>
+
+          <div class="theory-box cs-item">
+            <h4>⑦ Phân loại địa chỉ IPv6 (Set 1 - Q37)</h4>
+            <ul>
+              <li><strong>C. Global unicast:</strong> <code>1. 2001:DB8::BAF:3F57:FE94</code></li>
+              <li><strong>D. All node multicast:</strong> <code>2. FF02::1</code></li>
+              <li><strong>E. Loopback:</strong> <code>3. ::1</code></li>
+              <li><strong>B. Solicited node multicast:</strong> <code>4. FF02::1:FFAE:F85F</code></li>
+            </ul>
+            <div class="exam-tip" style="margin-top:0.65rem;">👉 Đáp án khoanh ngay: <strong><code>C1 - D2 - E3 - B4</code></strong></div>
+          </div>
+
+          <div class="theory-box cs-item">
+            <h4>⑧ Tra Bảng định tuyến chọn cổng xuất (SP26_RE - Q48)</h4>
+            <ul>
+              <li><strong>1. Fa0/0 (<code>172.17.6.0/24</code>):</strong> khớp <code>C (172.17.6.15)</code></li>
+              <li><strong>2. Fa0/1 (<code>172.17.10.0/24</code>):</strong> khớp <code>D (172.17.10.5)</code></li>
+              <li><strong>3. Fa1/0 (<code>172.17.12.0/24</code>):</strong> khớp <code>B (172.17.12.10)</code></li>
+              <li><strong>4. Fa1/1 (<code>172.17.14.0/24</code>):</strong> khớp <code>E (172.17.14.8)</code></li>
+              <li><strong>5. Serial0/0/0 (Default Route <code>0.0.0.0</code>):</strong> khớp <code>A (172.17.13.5)</code> (vì .13 không có trong bảng)</li>
+            </ul>
+            <div class="exam-tip" style="margin-top:0.65rem;">👉 Đáp án khoanh ngay: <strong><code>1C - 2D - 3B - 4E - 5A</code></strong></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 2: KEYWORD -> INSTANT ANSWER TABLE -->
+      <div class="card cheatsheet-section" style="margin-bottom:1.5rem;">
+        <div class="card-header">
+          <div>
+            <h3 class="card-title">⚡ 2. Bảng Phản Xạ: "Nhìn Từ Khóa Đề Bài &rarr; Khoanh Ngay Đáp Án"</h3>
+            <p style="font-size:0.9rem;color:var(--text-secondary);">Tổng hợp hơn 45 câu hỏi xuất hiện lặp lại từ 2 đến 4 lần qua 6 đề FE thực tế.</p>
+          </div>
+          <span class="badge">Mẹo Khoanh Nhanh</span>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:22%;">Chủ đề</th>
+                <th style="width:42%;">Khi đề bài hỏi / Có từ khóa...</th>
+                <th style="width:36%;">Đáp án đúng khoanh ngay ✅</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- IPv6 -->
+              <tr class="cs-item">
+                <td><span class="badge">IPv6</span></td>
+                <td>Độ dài &amp; định dạng của địa chỉ IPv6?</td>
+                <td><strong>128 bits</strong>, biểu diễn ở hệ <strong>Hexadecimal</strong> (thập lục phân).</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge">IPv6</span></td>
+                <td>Nhận địa chỉ IPv6 động <strong>không cần máy chủ DHCPv6</strong> (without DHCP server)?</td>
+                <td><strong>Stateless Address Autoconfiguration (SLAAC)</strong></td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge">IPv6</span></td>
+                <td>Giao thức nào thay thế ARP trong IPv6? Dùng <strong>2 bản tin</strong> nào?</td>
+                <td>Giao thức <strong>ICMPv6 Neighbor Discovery (ND)</strong> • Dùng 2 bản tin: <strong>Neighbor Solicitation (NS)</strong> &amp; <strong>Neighbor Advertisement (NA)</strong>.</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge">IPv6</span></td>
+                <td>Loại địa chỉ IPv6 nào chỉ giao tiếp <strong>trong 1 phân đoạn mạng (single segment / local link)</strong>, không được định tuyến (cannot be routed) và <strong>tự động gán</strong> khi bật IPv6?</td>
+                <td><strong>Link-Local Address (LLA)</strong> — bắt đầu bằng <code>FE80::/10</code> (VD: <code>fe80::1:1</code>, <code>FE80:5678:4251::FFFF</code>).</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge">IPv6</span></td>
+                <td>Hai địa chỉ <strong>Multicast IPv6</strong> được mọi Host và Router tham gia?</td>
+                <td><strong><code>FF02::1</code></strong> (All-nodes) và <strong><code>FF02::2</code></strong> (All-routers).</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge">IPv6</span></td>
+                <td>Quy trình <strong>EUI-64</strong> dùng thông tin gì để tạo Interface ID 64-bit?</td>
+                <td>Dùng <strong>Địa chỉ MAC 48-bit</strong> của cổng mạng (chèn <code>FFFE</code> vào giữa + đảo bit thứ 7).</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge">IPv6</span></td>
+                <td>Thiết bị kiểm tra trùng địa chỉ IPv6 (<strong>DAD</strong>) như thế nào? Nếu phát hiện trùng lúc khởi động thì sao?</td>
+                <td>Gửi bản tin <strong>ICMPv6 Neighbor Solicitation (NS)</strong>. Nếu trùng sẽ gửi trả <strong>Neighbor Advertisement (NA)</strong> báo cho bên gửi.</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge">IPv6</span></td>
+                <td>Tại sao <strong>NAT không cần thiết</strong> trong mạng IPv6?</td>
+                <td>Vì số lượng địa chỉ IPv6 công cộng <strong>cực kỳ lớn</strong> (ai cũng có thể có Public IPv6 GUA).</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge">IPv6</span></td>
+                <td>Độ dài tiền tố (Prefix length) chuẩn cho hầu hết mạng LAN IPv6?</td>
+                <td><strong><code>/64</code></strong> • Còn địa chỉ Loopback IPv6 là <strong><code>::1</code></strong>.</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge">IPv6 Subnet</span></td>
+                <td>Chia từ <code>2001:db8:0::/48</code> sang <code>/52</code> thì mạng con <strong>cuối cùng</strong> là gì? Còn chia 1 chữ số Hex cho mỗi cấp <code>Site / Sub-site / Subnet</code> thì tạo tối đa bao nhiêu subnet?</td>
+                <td>Subnet cuối của <code>/52</code> là <strong><code>2001:db8:0:f000::/52</code></strong> • Mỗi chữ số Hex (4 bit) tạo tối đa 2<sup>4</sup> = <strong><code>16</code> subnets</strong>.</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge">IPv6 Rút gọn</span></td>
+                <td>Rút gọn ngắn nhất địa chỉ <code>3FFE:1044:0000:0000:00AB:0000:0000:0057</code>?</td>
+                <td><strong><code>3FFE:1044:0:0:AB::57</code></strong> (Nhớ: chỉ được dùng dấu <code>::</code> đúng 1 lần!).</td>
+              </tr>
+
+              <!-- IPv4 & Subnetting -->
+              <tr class="cs-item">
+                <td><span class="badge badge-warning">IPv4 Subnet</span></td>
+                <td>Phép toán <strong>ANDing</strong> dùng để làm gì? Mục đích của việc <strong>chia Subnet</strong> là gì?</td>
+                <td>ANDing dùng để <strong>xác định địa chỉ mạng (determine the network address)</strong> • Chia Subnet giúp <strong>giảm kích thước miền quảng bá (smaller broadcast domains)</strong>.</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge badge-warning">IPv4 Subnet</span></td>
+                <td>Các con số tính Host ra thi lặp đi lặp lại nguyên văn:<ul><li><code>192.168.1.0/27</code></li><li><code>192.168.10.128/26</code></li><li><code>172.16.128.0</code> mask <code>255.255.252.0</code> (<code>/22</code>)</li><li><code>10.0.0.1 255.255.255.252</code> (<code>/30</code>)</li></ul></td>
+                <td><ul><li><code>/27</code> (còn 5 bit host) &rarr; <strong>30 usable hosts</strong></li><li><code>/26</code> (mask <code>.192</code>, 6 bit host) &rarr; <strong>62 usable hosts</strong></li><li><code>/22</code> (mask <code>255.255.252.0</code>, 10 bit host) &rarr; <strong>1022 hosts</strong></li><li><code>/30</code> (mask <code>.252</code>, 2 bit host) &rarr; <strong>2 usable hosts</strong> (dùng cho kết nối WAN P2P)</li></ul></td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge badge-warning">IPv4 Subnet</span></td>
+                <td>Trong dải <code>10.16.10.0/24</code>, chọn địa chỉ mạng con hợp lệ cho nhánh có <strong>25 hosts</strong>?</td>
+                <td><strong><code>10.16.10.64/27</code></strong> (Vì 25 hosts cần <code>/27</code> bước nhảy 32; <code>.64</code> chia hết cho 32, còn <code>.240/27</code> sai vì không chia hết cho 32).</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge badge-warning">IPv4 Subnet</span></td>
+                <td>Chia <code>192.168.1.0/24</code> thành <strong>4 mạng con</strong>. Địa chỉ mạng và mask của mạng con <strong>thứ hai</strong> là gì?</td>
+                <td><strong><code>192.168.1.64 – 255.255.255.192</code></strong> (4 mạng con mượn 2 bit &rarr; <code>/26</code> bước nhảy 64: mạng 1 là <code>.0</code>, mạng 2 là <code>.64</code>).</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge badge-warning">IPv4</span></td>
+                <td>Gửi bản tin tới tất cả các host trên một <strong>mạng ở xa (remote network)</strong> gọi là gì?</td>
+                <td><strong>Directed broadcast</strong> (Quảng bá định hướng).</td>
+              </tr>
+
+              <!-- Layer 2: Data Link, Ethernet, Switch, ARP -->
+              <tr class="cs-item">
+                <td><span class="badge badge-success">Layer 2 &amp; Switch</span></td>
+                <td>Hai tầng con (Sublayers) của IEEE 802 LAN/MAN Data Link là gì? Tầng con nào xử lý địa chỉ Ethernet?</td>
+                <td><strong>Logical Link Control (LLC)</strong> và <strong>Media Access Control (MAC)</strong> • Tầng con <strong>MAC</strong> xử lý địa chỉ Ethernet.</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge badge-success">Layer 2 &amp; Switch</span></td>
+                <td>3 phần cơ bản của Frame? 3 mục nằm trong Ethernet Header &amp; Trailer?</td>
+                <td>3 phần: <strong>Header, Data, and Trailer</strong> • 3 mục: <strong>Source MAC, Destination MAC, Error-checking information (FCS)</strong>.</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge badge-success">Layer 2 &amp; Switch</span></td>
+                <td>Khi nào Switch <strong>HỦY (Drop)</strong> một Frame?</td>
+                <td>Khi Frame <strong>nhỏ hơn 64 bytes</strong> (Runt frame) HOẶC khi giá trị <strong>CRC tính lại khác với FCS</strong> (Frame lỗi).</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge badge-success">Layer 2 &amp; Switch</span></td>
+                <td>Hai trường hợp Switch <strong>Flood (gửi tràn)</strong> Frame ra tất cả cổng trừ cổng nhận?</td>
+                <td>(1) Destination MAC là <strong>Broadcast (<code>FFFF.FFFF.FFFF</code>)</strong>, (2) Destination MAC <strong>chưa có trong bảng MAC (Unknown unicast)</strong>.</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge badge-success">Layer 2 &amp; Switch</span></td>
+                <td>Hai hành động chính của Switch Cisco là gì?</td>
+                <td>(1) Dùng <strong>Source MAC</strong> của Frame đi vào để xây dựng bảng MAC; (2) Dùng bảng MAC để chuyển tiếp Frame theo <strong>Destination MAC</strong>.</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge badge-success">Layer 2 &amp; Switch</span></td>
+                <td>Tính năng <strong>auto-MDIX</strong> là gì? Khi nối 2 Switch mới bằng cáp thẳng thì kết quả ra sao?</td>
+                <td><strong>auto-MDIX</strong> tự động nhận diện cáp thẳng hoặc cáp chéo. Khi nối 2 Switch mới: (1) Chạy ở <strong>tốc độ nhanh nhất cả 2 hỗ trợ</strong>, (2) Chạy <strong>Full-duplex</strong>, (3) <strong>Auto-MDIX</strong> loại bỏ nhu cầu đổi cáp chéo.</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge badge-success">Layer 2 &amp; Switch</span></td>
+                <td>24-bit đầu của địa chỉ MAC là gì? Còn 24-bit đầu của <strong>Multicast MAC cho IPv4</strong> có giá trị đặc biệt gì?</td>
+                <td>24-bit đầu của MAC thường là <strong>OUI</strong> (định danh nhà sản xuất Vendor) • 24-bit đầu của IPv4 Multicast MAC luôn là <strong><code>01-00-5E</code></strong>.</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge badge-success">ARP</span></td>
+                <td>ARP Request dùng Destination MAC nào? Được xử lý bởi ai? Tấn công <strong>ARP Spoofing</strong> nhằm mục đích gì?</td>
+                <td>Dest MAC = <strong><code>FFFF.FFFF.FFFF</code></strong> • Được nhận và xử lý bởi <strong>mọi thiết bị trong mạng cục bộ (every device on the local network)</strong> • ARP Spoofing nhằm <strong>gán địa chỉ IP với sai địa chỉ MAC</strong>.</td>
+              </tr>
+
+              <!-- Layer 4 & Layer 3 -->
+              <tr class="cs-item">
+                <td><span class="badge">Layer 4 (TCP/UDP)</span></td>
+                <td>Thứ tự bắt tay 3 bước TCP? Mục đích của 3-way handshake? Trường nào giúp ghép Segment đúng thứ tự?</td>
+                <td>Thứ tự: <strong><code>SYN, SYN-ACK, ACK</code></strong> • Mục đích: Xác nhận đích hiện diện, thiết lập trạng thái kết nối &amp; đồng bộ Sequence • Trường ghép thứ tự: <strong>Sequence number</strong>.</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge">Layer 4 (TCP/UDP)</span></td>
+                <td>Hai trường giống nhau ở cả TCP và UDP Header? Còn 3 trường trong UDP Header (Choose three)?</td>
+                <td>Giống nhau: <strong>Source port number</strong> &amp; <strong>Destination port number</strong> • UDP Header (8 bytes) gồm: <strong>Source Port, Destination Port, Length, Checksum</strong>.</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge">Layer 4 (TCP/UDP)</span></td>
+                <td>Bài toán <strong>TCP Window = 1000 bytes</strong>, gửi từng segment <strong>100-byte</strong>. Gửi bao nhiêu segment trước khi chờ ACK?</td>
+                <td><code>1000 / 100 =</code> <strong><code>10 segments</code></strong>.</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge">Layer 3 (IP/ICMP)</span></td>
+                <td>4 hoạt động cơ bản của tầng Network? 3 đặc tính của giao thức IP?</td>
+                <td>4 hoạt động: <strong>Addressing, Encapsulation, Routing, De-encapsulation</strong> • 3 đặc tính IP: <strong>Connectionless, Best-effort, Media independent</strong> (phụ thuộc tầng trên xử lý mất gói/sai thứ tự).</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge">Layer 3 (IP/ICMP)</span></td>
+                <td>Hai chức năng chính của Router? Hai trường được tham chiếu nhiều nhất trong IPv4 Header? Trường nào chứa giá trị <code>ICMP (1), TCP (6), UDP (17)</code>?</td>
+                <td>2 chức năng Router: <strong>Packet forwarding</strong> &amp; <strong>Path selection</strong> • 2 trường IPv4: <strong>Source IP address</strong> &amp; <strong>Destination IP address</strong> • Trường chứa 1, 6, 17: <strong><code>Protocol</code></strong>.</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge">ICMP &amp; Ping/Trace</span></td>
+                <td>Công cụ <code>traceroute</code> dùng bản tin ICMP nào? Dùng Source IP nào mặc định trên Router? Dấu chấm <code>.</code> khi ping trên Router nghĩa là gì?</td>
+                <td>Bản tin: <strong>ICMP Time Exceeded</strong> (khi TTL về 0) • Source IP: <strong>IP của cổng xuất ra (outbound interface)</strong> • Dấu <code>.</code>: <strong>Hết thời gian chờ (time expired/timeout)</strong>.</td>
+              </tr>
+
+              <!-- Cisco IOS CLI -->
+              <tr class="cs-item">
+                <td><span class="badge badge-warning">Cisco CLI</span></td>
+                <td>3 vị trí đặt được mật khẩu bảo vệ trên IOS? Lệnh nào mã hóa toàn bộ mật khẩu plaintext trong file cấu hình?</td>
+                <td>3 vị trí: <strong>VTY interface, Console interface, Privileged EXEC mode</strong> • Lệnh mã hóa: <strong><code>service password-encryption</code></strong> (ngăn nhìn trộm mật khẩu khi xem running-config).</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge badge-warning">Cisco CLI</span></td>
+                <td>Hai chức năng của <strong>NVRAM</strong>? Lệnh <code>copy running-config startup-config</code> làm thay đổi bộ nhớ nào?</td>
+                <td>NVRAM: (1) <strong>Lưu trữ file <code>startup-config</code></strong>, (2) <strong>Giữ nguyên nội dung khi mất điện</strong> • Lệnh <code>copy run start</code> làm thay đổi nội dung của <strong>NVRAM</strong>.</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge badge-warning">Cisco CLI</span></td>
+                <td>Giao diện nào giúp quản trị từ xa Switch L2? Mục đích đặt <strong>Default Gateway trên Switch L2</strong> là gì?</td>
+                <td>Giao diện: <strong>The switch virtual interface (SVI)</strong> • Default Gateway trên Switch dùng để <strong>chuyển tiếp các gói tin khởi phát từ chính con Switch đó đi tới các mạng ở xa</strong>.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SECTION 3: CONFUSING PAIRS COMPARISON -->
+      <div class="card cheatsheet-section">
+        <div class="card-header">
+          <div>
+            <h3 class="card-title">⚖️ 3. Phân Biệt Nhanh 6 Cặp Khái Niệm Dễ Nhầm Lẫn Nhất Khi Đi Thi</h3>
+            <p style="font-size:0.9rem;color:var(--text-secondary);">Đọc lướt bảng này trước khi vào phòng thi để không bao giờ bị lừa bởi các đáp án nhiễu.</p>
+          </div>
+          <span class="badge badge-success">Chống Bẫy Đề FE</span>
+        </div>
+
+        <div class="grid-2">
+          <div class="theory-box cs-item">
+            <h4>1. Store-and-Forward vs. Cut-Through Switching</h4>
+            <ul>
+              <li><strong>Store-and-Forward:</strong> Nhận <strong>toàn bộ Frame</strong> + tính toán kiểm tra lỗi <strong>CRC trong FCS</strong> trước khi chuyển tiếp (không bao giờ chuyển Frame lỗi).</li>
+              <li><strong>Cut-Through:</strong> Chuyển ngay khi đọc xong MAC đích &rarr; <strong>Giảm độ trễ (reduces latency) nhưng có rủi ro chuyển cả Frame lỗi (True)</strong>. Gồm 2 loại: <em>Fast-forward</em> và <em>Fragment-free</em>.</li>
+            </ul>
+          </div>
+
+          <div class="theory-box cs-item">
+            <h4>2. Physical Topology vs. Logical Topology</h4>
+            <ul>
+              <li><strong>Physical Topology (Vật lý):</strong> Cho thấy <strong>vị trí lắp đặt thực tế</strong> của các thiết bị trung gian và cách đi dây cáp (actual location &amp; cable installation).</li>
+              <li><strong>Logical Topology (Logic):</strong> Hiển thị <strong>địa chỉ IP (Layer 3)</strong>, quy hoạch Subnet/VLAN và tên cổng giao tiếp.</li>
+            </ul>
+          </div>
+
+          <div class="theory-box cs-item">
+            <h4>3. Intranet vs. Extranet</h4>
+            <ul>
+              <li><strong>Intranet (Nội bộ):</strong> Chỉ dành cho <strong>nhân viên trong cùng công ty</strong> (VD: nhân viên chi nhánh truy cập bảng giá mật trên server tại trụ sở chính Head Office).</li>
+              <li><strong>Extranet (Mở rộng):</strong> Cung cấp quyền truy cập an toàn cho <strong>cá nhân làm việc ở tổ chức khác</strong> (đối tác, nhà cung cấp, khách hàng) cần truy cập dữ liệu của tổ chức.</li>
+            </ul>
+          </div>
+
+          <div class="theory-box cs-item">
+            <h4>4. 4 Loại Bộ Nhớ trên Router/Switch Cisco</h4>
+            <ul>
+              <li><strong>RAM:</strong> Lưu <code>running-config</code>, bảng định tuyến, bảng ARP (mất dữ liệu khi tắt nguồn).</li>
+              <li><strong>NVRAM:</strong> Lưu <code>startup-config</code> (giữ nguyên dữ liệu khi tắt nguồn).</li>
+              <li><strong>Flash:</strong> Lưu hệ điều hành <strong>Cisco IOS</strong> (không mất khi tắt nguồn).</li>
+              <li><strong>ROM:</strong> Lưu chương trình <strong>Bootup instructions</strong> / POST / ROMMON.</li>
+            </ul>
+          </div>
+
+          <div class="theory-box cs-item">
+            <h4>5. Single-Mode Fiber (SMF) vs. Multimode Fiber (MMF)</h4>
+            <ul>
+              <li><strong>Single-Mode (SMF):</strong> Lõi <strong>rất nhỏ</strong> (9 microns), dùng tia Laser, truyền đường trục khoảng cách <strong>rất xa (~100 km)</strong>.</li>
+              <li><strong>Multimode (MMF):</strong> Lõi lớn hơn (50/62.5 microns), dùng đèn LED, nhiều tia sáng phản xạ, chỉ truyền trong tòa nhà/khuôn viên (&le; 2 km).</li>
+            </ul>
+          </div>
+
+          <div class="theory-box cs-item">
+            <h4>6. Bandwidth (Băng thông) vs. Throughput (Thông lượng)</h4>
+            <ul>
+              <li><strong>Bandwidth:</strong> Dung lượng dữ liệu <strong>tối đa theo lý thuyết</strong> mà môi trường truyền mang được trong 1 đơn vị thời gian.</li>
+              <li><strong>Throughput:</strong> Lượng dữ liệu <strong>thực tế</strong> truyền thành công. Phụ thuộc 3 yếu tố: <em>(1) Lưu lượng hiện tại trên mạng, (2) Loại lưu lượng (type of traffic), (3) Độ trễ do số lượng thiết bị mạng đi qua</em>.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 2: THEORY & INTERACTIVE OSI ==================== -->
+    <section class="tab-panel" id="tab-theory">
+      <!-- Plain-Language Story Walkthrough of Networking -->
+      <div class="card" style="margin-bottom:1.5rem;">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">🌟 Hiểu Bản chất Cốt lõi Mạng Máy Tính trong 5 Phút (Không cần học vẹt)</h2>
+            <p style="font-size:0.95rem;color:var(--text-secondary);margin-top:0.25rem;">
+              Hãy tưởng tượng việc gửi một gói dữ liệu từ <strong>PC của bạn</strong> sang <strong>Web Server</strong> giống hệt như gửi một kiện hàng qua bưu điện. Toàn bộ đề FE xoay quanh 4 câu hỏi dưới đây:
+            </p>
+          </div>
+          <span class="badge badge-success">Dễ hiểu nhất</span>
+        </div>
+
+        <div class="grid-2">
+          <div class="theory-box">
+            <h4>📦 1. Quá trình Đóng gói (Encapsulation) &amp; Mở gói (Decode)</h4>
+            <ul>
+              <li><strong>Khi GỬI đi (Từ tầng 7 xuống tầng 1):</strong>
+                <br/>• <strong>Tầng 7-5 (Application):</strong> Tạo nội dung thư (<code>Data</code> — HTTP, Telnet, DNS).
+                <br/>• <strong>Tầng 4 (Transport):</strong> Cắt nhỏ dữ liệu thành <code>Segment</code>, dán nhãn <strong>Số hiệu cổng (Port)</strong> để biết ứng dụng nào nhận (Web = Port 80/443, SSH = 22).
+                <br/>• <strong>Tầng 3 (Network):</strong> Bọc Segment vào <code>Packet</code>, ghi <strong>Source IP &amp; Destination IP</strong> (Địa chỉ nhà người gửi và người nhận cuối cùng — <em>không đổi trên suốt đường đi</em>).
+                <br/>• <strong>Tầng 2 (Data Link):</strong> Bọc Packet vào <code>Frame</code>, gắn <strong>Source MAC &amp; Destination MAC</strong> ở đầu và <strong>FCS (CRC)</strong> kiểm tra lỗi ở đuôi.
+                <br/>• <strong>Tầng 1 (Physical):</strong> Biến các <code>Bits</code> (0, 1) thành tín hiệu điện/ánh sáng/sóng Wi-Fi truyền trên dây cáp.
+              </li>
+              <li><strong>Khi NHẬN về (Từ tầng 1 lên tầng 7):</strong> Bóc vỏ từ ngoài vào trong &rarr; <strong><code>Ethernet &rarr; IP &rarr; TCP &rarr; HTTP</code></strong>.</li>
+            </ul>
+          </div>
+
+          <div class="theory-box">
+            <h4>🔄 2. Sự khác biệt sống còn giữa Địa chỉ MAC (Tầng 2) và Địa chỉ IP (Tầng 3)</h4>
+            <ul>
+              <li><strong>Địa chỉ IP (Tầng 3 - Logic):</strong> Giống như <em>địa chỉ người gửi &amp; người nhận ghi trên đơn hàng</em>. Khi gói tin đi từ Web Server qua nhiều Router về PC1, <strong>Source IP và Destination IP giữ nguyên không đổi</strong>.</li>
+              <li><strong>Địa chỉ MAC (Tầng 2 - Vật lý 48-bit):</strong> Giống như <em>biển số xe tải chở hàng ở từng chặng</em>. Chỉ có tác dụng trong <strong>cùng 1 mạng nội bộ (Local Link)</strong>!
+                <br/>• Khi <strong>Web Server</strong> muốn gửi gói tin cho <strong>PC1 ở mạng khác</strong>, Frame rời khỏi Web Server phải ghi <strong>Destination MAC là MAC của cổng Router Default Gateway nối trực tiếp với Web Server</strong> (chứ không phải MAC của PC1!).
+                <br/>• Qua mỗi con Router, Router sẽ <strong>xé vỏ Frame cũ (De-encapsulate)</strong>, đọc IP đích để chọn đường, rồi <strong>bọc vỏ Frame mới</strong> với MAC mới.
+              </li>
+            </ul>
+          </div>
+
+          <div class="theory-box">
+            <h4>🔀 3. Switch (Tầng 2) hoạt động khác Router (Tầng 3) thế nào?</h4>
+            <ul>
+              <li><strong>Switch (Chuyển mạch trong cùng LAN):</strong>
+                <br/>• Chỉ nhìn <strong>Địa chỉ MAC</strong>, không quan tâm IP của gói tin đi qua!
+                <br/>• Nhìn <strong>Source MAC</strong> của Frame đi vào cổng để <em>học và ghi vào bảng MAC Table</em>.
+                <br/>• Nhìn <strong>Destination MAC</strong> để <em>chuyển tiếp (Forward)</em> ra đúng cổng đích.
+                <br/>• Nếu Destination MAC là <strong>Broadcast (<code>FFFF.FFFF.FFFF</code>)</strong> hoặc <strong>chưa có trong bảng MAC (Unknown Unicast)</strong> &rarr; Switch <strong>Flood (gửi tràn)</strong> ra tất cả các cổng trừ cổng nhận vào!
+                <br/>• Nếu Frame <strong>&lt; 64 bytes</strong> hoặc <strong>sai CRC trong FCS</strong> &rarr; Switch <strong>Drop (hủy)</strong> ngay.
+              </li>
+              <li><strong>Router (Định tuyến giữa các mạng khác nhau):</strong>
+                <br/>• Thực hiện 2 việc: <strong>Path selection</strong> (chọn đường) và <strong>Packet forwarding</strong> (chuyển tiếp gói tin). Nếu không khớp mạng nào trong bảng định tuyến &rarr; đẩy ra <strong>Default Route (0.0.0.0)</strong>, nếu không có Default Route thì <strong>Drop</strong>.
+              </li>
+            </ul>
+          </div>
+
+          <div class="theory-box">
+            <h4>⚡ 4. TCP vs. UDP (Tầng 4) &amp; ARP vs. ICMPv6 ND</h4>
+            <ul>
+              <li><strong>TCP (Tin cậy - Connection-oriented):</strong> Phải bắt tay 3 bước (<strong><code>SYN &rarr; SYN-ACK &rarr; ACK</code></strong>) trước khi truyền; đánh số <strong>Sequence Number</strong> để ghép đúng thứ tự; dùng <strong>Window Size</strong> điều tiết lưu lượng (VD: Window 1000B / Segment 100B = gửi <strong>10 segments</strong> mới chờ ACK). Dùng cho Web (HTTP), Email (SMTP/POP3/IMAP), FTP, SSH.</li>
+              <li><strong>UDP (Nhanh, chi phí thấp - Best-effort):</strong> Không bắt tay, có dữ liệu là <strong>gửi đi ngay (just sends the datagrams)</strong>, Header chỉ 8 bytes (Source Port, Dest Port, Length, Checksum). Dùng cho <strong>Live video streaming</strong>, VoIP, DNS, DHCP.</li>
+              <li><strong>Tìm MAC từ IP:</strong>
+                <br/>• <strong>IPv4 dùng ARP:</strong> Gửi <em>ARP Request</em> dạng Broadcast (<code>FFFF.FFFF.FFFF</code>) cho mọi máy trong LAN.
+                <br/>• <strong>IPv6 bỏ Broadcast, dùng ICMPv6 ND:</strong> Gửi 2 bản tin <strong>Neighbor Solicitation (NS)</strong> và <strong>Neighbor Advertisement (NA)</strong> qua địa chỉ Multicast.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:1.5rem;">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">🌐 Mô hình OSI 7 Tầng & TCP/IP Tương tác</h2>
+            <p style="font-size:0.86rem;color:var(--text-secondary);">Bấm vào từng tầng bên trái để xem PDU, Giao thức, Thiết bị, Địa chỉ định danh và mô phỏng đóng gói Encapsulation.</p>
+          </div>
+          <span class="badge">Interactive Visualizer</span>
+        </div>
+
+        <div class="osi-layout">
+          <div class="osi-stack" id="osi-stack-list"></div>
+          <div class="card" id="osi-layer-detail" style="background:var(--bg-secondary);"></div>
+        </div>
+      </div>
+
+      <!-- Detailed Syllabus Chapters -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
+        <h2 style="font-size:1.25rem;font-weight:800;">📖 Nội dung trọng tâm 7 Chương NWC204</h2>
+        <span style="font-size:0.84rem;color:var(--text-secondary);">Tích vào ô "Hoàn thành" ở mỗi chương để lưu tiến độ học tập</span>
+      </div>
+      <div class="chapter-list" id="chapters-container" style="margin-bottom:1.75rem;"></div>
+
+      <!-- Well-Known Ports Reference Table -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">🔌 Bảng tra cứu Số hiệu Cổng (Well-Known Ports) hay hỏi trong FE</h3>
+          <input
+            type="text"
+            id="ports-search-input"
+            class="form-control"
+            placeholder="Lọc theo số Port, TCP/UDP hoặc tên dịch vụ..."
+            style="max-width:320px;"
+          />
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Port</th>
+                <th>Giao thức L4</th>
+                <th>Dịch vụ</th>
+                <th>Chức năng & Ghi chú đi thi</th>
+              </tr>
+            </thead>
+            <tbody id="ports-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 3: SUBNET & VLSM CALCULATOR ==================== -->
+    <section class="tab-panel" id="tab-subnet">
+      <!-- Step-by-step Subnetting Master Guide -->
+      <div class="card" style="margin-bottom:1.5rem;">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">📘 Phương Pháp Chia Mạng &amp; Tính Nhẩm Subnet Trong 15 Giây (Từ A đến Z)</h2>
+            <p style="font-size:0.95rem;color:var(--text-secondary);margin-top:0.25rem;">
+              Chỉ cần nắm vững <strong>3 công thức cốt lõi</strong> và <strong>Bước nhảy (Magic Number)</strong> dưới đây, bạn sẽ giải được 100% câu hỏi tính toán IPv4 &amp; IPv6 trong đề FE mà không cần đổi ra nhị phân dài dòng!
+            </p>
+          </div>
+          <span class="badge badge-warning">Bí kíp 15 Giây</span>
+        </div>
+
+        <div class="grid-2" style="margin-bottom:1rem;">
+          <div class="theory-box">
+            <h4>🔑 Bước 1: Nhớ 3 Công thức Vàng của IPv4 (Tổng 32 bits)</h4>
+            <ul>
+              <li>Một địa chỉ IPv4 dài <strong>32 bits</strong> chia làm 4 cụm (4 Octet), mỗi Octet có <strong>8 bits</strong>:
+                <br/>• Nếu đề cho <strong><code>/n</code></strong> (ví dụ <code>/26</code>) thì số bit phần Mạng = <code>n</code>, và số bit phần Host còn lại là:
+                <br/>👉 <strong>Số bit Host: <code>h = 32 - n</code></strong>
+              </li>
+              <li><strong>Công thức 1 — Tính số IP gán được cho máy tính (Usable Hosts):</strong>
+                <br/>👉 <strong><code>Số Host = 2<sup>h</sup> - 2</code></strong> <em>(Trừ đi 2 địa chỉ: Địa chỉ đầu tiên là Network Address, địa chỉ cuối cùng là Broadcast Address)</em>.
+              </li>
+              <li><strong>Công thức 2 — Tính số mạng con tạo được khi mượn <code>s</code> bit:</strong>
+                <br/>👉 <strong><code>Số mạng con = 2<sup>s</sup></code></strong> <em>(Ví dụ: cần 4 mạng con &rarr; 2<sup>s</sup> = 4 &rArr; s = 2 bit mượn thêm, từ <code>/24</code> thành <code>/26</code>)</em>.
+              </li>
+              <li><strong>Công thức 3 — Tính Bước nhảy (Magic Number = 2<sup>h</sup> trong 1 Octet):</strong>
+                <br/>👉 <strong><code>Bước nhảy = 256 - Số cuối của Subnet Mask</code></strong> (hoặc 2<sup>h</sup> khi /24 &le; /n &le; /30).
+                <br/>Mọi <strong>Địa chỉ mạng (Network Address)</strong> bắt buộc phải là <strong>bội số của Bước nhảy</strong> (<code>0, bước nhảy, 2×bước nhảy...</code>).
+              </li>
+            </ul>
+          </div>
+
+          <div class="theory-box">
+            <h4>📊 Bước 2: Bảng Tra Nhanh Các Prefix Hay Ra Thi Nhất</h4>
+            <div class="table-wrap" style="margin-top:0.4rem;">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Prefix</th>
+                    <th>Subnet Mask</th>
+                    <th>Bit Host (h)</th>
+                    <th>Bước nhảy</th>
+                    <th>Số Host (2<sup>h</sup> - 2)</th>
+                  </tr>
+                </thead>
+                <tbody class="mono">
+                  <tr><td>/22</td><td>255.255.252.0</td><td>10 bits</td><td>4 (ở Octet 3)</td><td><strong>1022 hosts</strong></td></tr>
+                  <tr><td>/24</td><td>255.255.255.0</td><td>8 bits</td><td>1 (ở Octet 3)</td><td><strong>254 hosts</strong></td></tr>
+                  <tr><td>/25</td><td>255.255.255.128</td><td>7 bits</td><td>128 (Octet 4)</td><td><strong>126 hosts</strong></td></tr>
+                  <tr><td>/26</td><td>255.255.255.192</td><td>6 bits</td><td>64 (Octet 4)</td><td><strong>62 hosts</strong></td></tr>
+                  <tr><td>/27</td><td>255.255.255.224</td><td>5 bits</td><td>32 (Octet 4)</td><td><strong>30 hosts</strong></td></tr>
+                  <tr><td>/28</td><td>255.255.255.240</td><td>4 bits</td><td>16 (Octet 4)</td><td><strong>14 hosts</strong></td></tr>
+                  <tr><td>/29</td><td>255.255.255.248</td><td>3 bits</td><td>8 (Octet 4)</td><td><strong>6 hosts</strong></td></tr>
+                  <tr><td>/30</td><td>255.255.255.252</td><td>2 bits</td><td>4 (Octet 4)</td><td><strong>2 hosts (WAN)</strong></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="theory-box">
+            <h4>🎯 Bước 3: Giải Chi Tiết 5 Bài Toán Subnet IPv4 Trong Đề FE</h4>
+            <ul>
+              <li><strong>Bài 1 (SP26 &amp; FA25_FE85):</strong> <em>Mạng <code>192.168.1.0/27</code> có bao nhiêu usable IP?</em>
+                <br/>&rarr; Số bit host <code>h = 32 - 27 = 5</code>. Số IP dùng được = 2<sup>5</sup> - 2 = 32 - 2 = <strong><code>30</code></strong>.
+              </li>
+              <li><strong>Bài 2 (Set 1 &amp; FA25_RE):</strong> <em>Mạng <code>192.168.10.128/26</code> có bao nhiêu host?</em>
+                <br/>&rarr; Số bit host <code>h = 32 - 26 = 6</code>. Số host = 2<sup>6</sup> - 2 = 64 - 2 = <strong><code>62</code></strong>.
+              </li>
+              <li><strong>Bài 3 (SP26 &amp; FA25_RE):</strong> <em>Mạng <code>172.16.128.0</code> với mask <code>255.255.252.0</code> có bao nhiêu host?</em>
+                <br/>&rarr; Đổi <code>252</code> ở Octet 3: <code>256 - 252 = 4 = 2<sup>2</sup></code> (còn 2 bit 0 ở Octet 3 + 8 bit 0 ở Octet 4 = <strong>10 bit host</strong>, tức <code>/22</code>). Số host = 2<sup>10</sup> - 2 = 1024 - 2 = <strong><code>1022</code></strong>.
+              </li>
+              <li><strong>Bài 4 (Set 1 &amp; FA25_FE85):</strong> <em>Trong dải <code>10.16.10.0/24</code>, chọn địa chỉ mạng con cho nhánh <strong>25 hosts</strong>?</em>
+                <br/>&rarr; Cần &ge; 25 hosts &rArr; chọn <code>h = 5</code> bit (2<sup>5</sup> - 2 = 30 &ge; 25) &rArr; Prefix là <strong><code>/27</code></strong>, bước nhảy = <strong>32</strong>.
+                <br/>&rarr; Các địa chỉ mạng <code>/27</code> hợp lệ phải chia hết cho 32 (<code>.0, .32, .64, .96...</code>). Trong các đáp án chỉ có <strong><code>10.16.10.64/27</code></strong> chia hết cho 32 (còn <code>.240/27</code> sai vì 240 không chia hết cho 32!).
+              </li>
+              <li><strong>Bài 5 (Set 1 - Q3):</strong> <em>Chia <code>192.168.1.0/24</code> thành <strong>4 mạng con</strong>. Tìm mạng con thứ 2?</em>
+                <br/>&rarr; Tạo 4 mạng con &rArr; 2<sup>s</sup> = 4 &rArr; mượn <code>s = 2</code> bit &rArr; Prefix mới là <code>24 + 2 =</code> <strong><code>/26</code></strong> (Mask <code>255.255.255.192</code>), bước nhảy = <strong>64</strong>.
+                <br/>&rarr; Mạng 1: <code>192.168.1.0</code> | <strong>Mạng 2: <code>192.168.1.64 – 255.255.255.192</code></strong> | Mạng 3: <code>.128</code> | Mạng 4: <code>.192</code>.
+              </li>
+            </ul>
+          </div>
+
+          <div class="theory-box">
+            <h4>🌐 Bước 4: Cách Chia Subnet IPv6 Cực Dễ (Theo Chữ Số Hex)</h4>
+            <ul>
+              <li>Địa chỉ IPv6 dài <strong>128 bits</strong> gồm <strong>8 cụm (8 Hextet)</strong> cách nhau bởi dấu <code>:</code>.
+                <br/>• Mỗi Hextet có <strong>4 chữ số Hex = 16 bits</strong> &rarr; <strong>Mỗi chữ số Hex = 4 bits</strong> (chạy từ <code>0, 1, 2... 9, A, B, C, D, E, F</code> — tổng cộng 2<sup>4</sup> = 16 giá trị).
+              </li>
+              <li><strong>Bài toán IPv6 số 1 (SU26_RE - Q28):</strong>
+                <br/><em>Cho <code>2001:db8:0::/48</code>, đổi prefix sang <code>/52</code> thì mạng con cuối cùng là gì?</em>
+                <br/>• <code>/48</code> chiếm trọn 3 cụm đầu (<code>2001:db8:0</code>).
+                <br/>• Đổi sang <code>/52</code> là mượn thêm <code>52 - 48 =</code> <strong>4 bits</strong> = <strong>đúng 1 chữ số Hex đầu tiên của cụm thứ 4</strong>!
+                <br/>• Chữ số Hex đầu tiên của cụm 4 chạy từ <code>0</code> đến <code>f</code>. Vậy mạng cuối cùng có chữ số đầu là <code>f</code>, 3 chữ số sau giữ nguyên là <code>000</code> &rarr; <strong><code>2001:db8:0:f000::/52</code></strong>.
+              </li>
+              <li><strong>Bài toán IPv6 số 2 (FA25_FE85 - Q15):</strong>
+                <br/><em>Cụm thứ 4 (<code>0000</code>) của <code>2001:DB8:1234:0000::/64</code> dành 1 chữ số Hex cho <code>Site</code>, 1 chữ số cho <code>Sub-site</code>, 1 chữ số cho <code>Subnet</code>. Hỏi mỗi Sub-site có tối đa bao nhiêu Subnet?</em>
+                <br/>• Vì phần <code>Subnet</code> được cấp <strong>1 chữ số Hex (4 bits)</strong> nên số Subnet tối đa là 2<sup>4</sup> = <strong><code>16</code></strong>!
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- IPv4 Subnet Calculator -->
+      <div class="card" style="margin-bottom:1.5rem;">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">🧮 Công cụ Tính toán Subnet IPv4 & Phân tích Bit Nhị phân</h2>
+            <p style="font-size:0.85rem;color:var(--text-secondary);">Nhập địa chỉ IPv4 và Prefix (CIDR) để xem chi tiết Network ID, Broadcast, Host Range, Wildcard Mask và hướng dẫn cách tính nhẩm.</p>
+          </div>
+          <span class="badge">IPv4 CIDR Calculator</span>
+        </div>
+
+        <div style="display:flex;gap:0.75rem;flex-wrap:wrap;align-items:flex-end;margin-bottom:1.25rem;">
+          <div class="input-group" style="margin-bottom:0;flex:1;min-width:220px;">
+            <label for="calc-ip-input">Địa chỉ IPv4</label>
+            <input type="text" id="calc-ip-input" class="form-control mono" value="192.168.10.75" placeholder="VD: 192.168.10.75" />
+          </div>
+          <div class="input-group" style="margin-bottom:0;width:220px;">
+            <label for="calc-prefix-input">Prefix Length (/CIDR)</label>
+            <select id="calc-prefix-input" class="form-control mono">
+              <option value="8">/8 (255.0.0.0)</option>
+              <option value="12">/12 (255.240.0.0)</option>
+              <option value="16">/16 (255.255.0.0)</option>
+              <option value="17">/17 (255.255.128.0)</option>
+              <option value="18">/18 (255.255.192.0)</option>
+              <option value="19">/19 (255.255.224.0)</option>
+              <option value="20">/20 (255.255.240.0)</option>
+              <option value="21">/21 (255.255.248.0)</option>
+              <option value="22">/22 (255.255.252.0)</option>
+              <option value="23">/23 (255.255.254.0)</option>
+              <option value="24">/24 (255.255.255.0)</option>
+              <option value="25">/25 (255.255.255.128)</option>
+              <option value="26" selected>/26 (255.255.255.192)</option>
+              <option value="27">/27 (255.255.255.224)</option>
+              <option value="28">/28 (255.255.255.240)</option>
+              <option value="29">/29 (255.255.255.248)</option>
+              <option value="30">/30 (255.255.255.252)</option>
+            </select>
+          </div>
+          <button class="btn" id="calc-subnet-btn">⚡ Phân tích Subnet</button>
+        </div>
+
+        <div id="subnet-calc-output"></div>
+      </div>
+
+      <!-- VLSM Planner & Random Drill -->
+      <div class="grid-2">
+        <!-- VLSM Auto-Planner -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">📐 Bảng Chia mạng con VLSM Tự động (Chuẩn bài tập PE/FE)</h3>
+              <p style="font-size:0.83rem;color:var(--text-secondary);">Nhập mạng gốc và số lượng Host của từng LAN/WAN, hệ thống tự sắp xếp từ lớn đến nhỏ và chia tuần tự.</p>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:0.6rem;margin-bottom:0.85rem;">
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>Mạng gốc (Base Network)</label>
+              <input type="text" id="vlsm-base-ip" class="form-control mono" value="192.168.1.0" />
+            </div>
+            <div class="input-group" style="width:110px;margin-bottom:0;">
+              <label>Prefix gốc</label>
+              <input type="number" id="vlsm-base-prefix" class="form-control mono" value="24" min="8" max="30" />
+            </div>
+          </div>
+
+          <div style="margin-bottom:0.75rem;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;">
+              <label style="font-size:0.82rem;font-weight:600;color:var(--text-secondary);">Danh sách mạng con & Số Host yêu cầu:</label>
+              <button class="btn btn-secondary btn-sm" id="vlsm-add-row-btn">+ Thêm mạng con</button>
+            </div>
+            <div id="vlsm-reqs-list">
+              <div class="vlsm-req-row" style="display:flex;gap:0.5rem;margin-bottom:0.5rem;">
+                <input type="text" class="form-control vlsm-name" value="LAN A (Phòng Sales)" style="flex:1;" />
+                <input type="number" class="form-control vlsm-hosts" value="55" min="1" style="width:120px;" />
+                <button class="btn btn-secondary btn-sm" onclick="this.parentElement.remove()">✕</button>
+              </div>
+              <div class="vlsm-req-row" style="display:flex;gap:0.5rem;margin-bottom:0.5rem;">
+                <input type="text" class="form-control vlsm-name" value="LAN B (Phòng Kỹ thuật)" style="flex:1;" />
+                <input type="number" class="form-control vlsm-hosts" value="26" min="1" style="width:120px;" />
+                <button class="btn btn-secondary btn-sm" onclick="this.parentElement.remove()">✕</button>
+              </div>
+              <div class="vlsm-req-row" style="display:flex;gap:0.5rem;margin-bottom:0.5rem;">
+                <input type="text" class="form-control vlsm-name" value="LAN C (Phòng Nhân sự)" style="flex:1;" />
+                <input type="number" class="form-control vlsm-hosts" value="12" min="1" style="width:120px;" />
+                <button class="btn btn-secondary btn-sm" onclick="this.parentElement.remove()">✕</button>
+              </div>
+              <div class="vlsm-req-row" style="display:flex;gap:0.5rem;margin-bottom:0.5rem;">
+                <input type="text" class="form-control vlsm-name" value="WAN R1-R2 (Point-to-Point)" style="flex:1;" />
+                <input type="number" class="form-control vlsm-hosts" value="2" min="1" style="width:120px;" />
+                <button class="btn btn-secondary btn-sm" onclick="this.parentElement.remove()">✕</button>
+              </div>
+            </div>
+          </div>
+
+          <button class="btn" id="vlsm-calc-btn" style="width:100%;justify-content:center;margin-bottom:1rem;">🚀 Tính bảng quy hoạch VLSM</button>
+          <div id="vlsm-output"></div>
+        </div>
+
+        <!-- Random Subnetting Practice Drill -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">🎯 Luyện phản xạ tính nhẩm Subnet ngẫu nhiên</h3>
+              <p style="font-size:0.83rem;color:var(--text-secondary);">Hệ thống sinh đề ngẫu nhiên để bạn tự tính tay trước khi bấm Kiểm tra đáp án.</p>
+            </div>
+            <button class="btn btn-secondary btn-sm" id="drill-new-btn">🎲 Đổi đề khác</button>
+          </div>
+
+          <div class="theory-box" style="text-align:center;margin-bottom:1rem;">
+            <span style="font-size:0.82rem;color:var(--text-secondary);">Cho địa chỉ IPv4 và Prefix:</span>
+            <div class="mono" id="drill-target-ip" style="font-size:1.65rem;font-weight:800;color:var(--accent);margin-top:0.2rem;">192.168.1.10/26</div>
+          </div>
+
+          <div class="grid-2" style="margin-bottom:0.75rem;">
+            <div class="input-group" style="margin-bottom:0;">
+              <label>1. Network Address (Địa chỉ mạng)</label>
+              <input type="text" id="drill-ans-net" class="form-control mono" placeholder="VD: 192.168.1.0" />
+            </div>
+            <div class="input-group" style="margin-bottom:0;">
+              <label>2. First Usable Host (IP đầu tiên)</label>
+              <input type="text" id="drill-ans-first" class="form-control mono" placeholder="VD: 192.168.1.1" />
+            </div>
+            <div class="input-group" style="margin-bottom:0;">
+              <label>3. Last Usable Host (IP cuối cùng)</label>
+              <input type="text" id="drill-ans-last" class="form-control mono" placeholder="VD: 192.168.1.62" />
+            </div>
+            <div class="input-group" style="margin-bottom:0;">
+              <label>4. Broadcast Address (Địa chỉ quảng bá)</label>
+              <input type="text" id="drill-ans-bcast" class="form-control mono" placeholder="VD: 192.168.1.63" />
+            </div>
+          </div>
+
+          <button class="btn btn-success" id="drill-check-btn" style="width:100%;justify-content:center;">✔️ Kiểm tra Đáp án & Xem giải thích</button>
+          <div id="drill-feedback"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 4: CISCO IOS CLI CHEAT SHEET ==================== -->
+    <section class="tab-panel" id="tab-cli">
+      <div class="card" style="margin-bottom:1.5rem;">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">💻 Sổ tay Lệnh Cấu hình Cisco IOS (Luyện thi PE Packet Tracer)</h2>
+            <p style="font-size:0.86rem;color:var(--text-secondary);">Tổng hợp đầy đủ các nhóm lệnh cấu hình Router & Switch xuất hiện trong bài thi thực hành PE NWC204. Bấm Copy để dán nhanh vào Packet Tracer.</p>
+          </div>
+          <input
+            type="text"
+            id="cli-search-input"
+            class="form-control"
+            placeholder="Tìm lệnh: ssh, vlan, ip route, password..."
+            style="max-width:300px;"
+          />
+        </div>
+
+        <div class="exam-tip" style="margin-top:0;">
+          <strong>🔥 Checklist 6 điểm vàng tránh mất điểm oan khi thi PE Packet Tracer:</strong>
+          <ol style="padding-left:1.25rem;margin-top:0.3rem;">
+            <li>Đặt <code>hostname</code> và <code>banner motd</code> phải <strong>gõ chính xác từng chữ hoa/thường</strong> theo đề bài (Completion % trong Packet Tracer chấm theo chuỗi khớp chính xác).</li>
+            <li>Sau khi gán IP trên cổng Router hoặc <code>interface vlan 1</code> trên Switch, luôn nhớ gõ <code>no shutdown</code>.</li>
+            <li>Nếu đề yêu cầu cấu hình IPv6 trên Router, đừng quên bật <code>ipv6 unicast-routing</code> ở chế độ Global Config.</li>
+            <li>Đặt mật khẩu <code>line console 0</code> và <code>line vty 0 15</code> bắt buộc phải có lệnh <code>login</code> (hoặc <code>login local</code> nếu dùng username/secret).</li>
+            <li>Switch cần có <code>ip default-gateway [IP-Router]</code> thì các PC ở mạng khác mới Ping được tới IP quản trị của Switch.</li>
+            <li>Trước khi nộp bài, gõ <code>copy running-config startup-config</code> (hoặc <code>wr</code>) trên TẤT CẢ Router và Switch!</li>
+          </ol>
+        </div>
+      </div>
+
+      <div id="cli-categories-container"></div>
+    </section>
+
+    <!-- ==================== TAB 5: FLASHCARDS ==================== -->
+    <section class="tab-panel" id="tab-flashcards">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">🃏 Flashcards Toàn Bộ Câu Hỏi Đề FE &amp; Thuật Ngữ Trọng Tâm</h2>
+            <p style="font-size:0.92rem;color:var(--text-secondary);margin-top:0.2rem;">
+              Tích hợp <strong>100% câu hỏi từ 6 Đề FE thực tế + Thuật ngữ cốt lõi</strong> • Click vào thẻ (hoặc nhấn phím <code>Space</code>) để lật xem đáp án &amp; giải thích • Dùng phím <code>&larr;</code> <code>&rarr;</code> để chuyển câu.
+            </p>
+          </div>
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+            <button class="btn btn-sm" id="fc-mode-single-btn">🃏 Lật từng thẻ 3D</button>
+            <button class="btn btn-secondary btn-sm" id="fc-mode-grid-btn">📋 Xem danh sách toàn bộ thẻ</button>
+            <button class="btn btn-secondary btn-sm" id="fc-reveal-all-btn" style="display:none;">👁️ Hiện tất cả đáp án</button>
+          </div>
+        </div>
+
+        <!-- Filter & Search Bar -->
+        <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-bottom:1.1rem;align-items:center;">
+          <input
+            type="text"
+            id="fc-search-input"
+            class="form-control"
+            placeholder="🔎 Tìm câu hỏi hoặc từ khóa trong Flashcard (VD: 'SLAAC', 'NVRAM', '192.168', 'auto-MDIX', 'ARP')..."
+            style="flex:1;min-width:260px;"
+          />
+          <select id="fc-category-select" class="form-control" style="width:auto;min-width:230px;"></select>
+          <select id="fc-status-select" class="form-control" style="width:auto;">
+            <option value="ALL">Tất cả trạng thái</option>
+            <option value="UNMASTERED">Chưa thuộc (Cần ôn)</option>
+            <option value="MASTERED">Đã thuộc ✓</option>
+          </select>
+          <button class="btn btn-secondary" id="fc-shuffle-btn">🔀 Trộn thẻ</button>
+        </div>
+
+        <!-- Mode 1: Single 3D Flip Card -->
+        <div id="fc-single-view">
+          <div class="flashcard-stage">
+            <div class="flashcard" id="flashcard-el">
+              <div class="flashcard-face front">
+                <div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;gap:0.5rem;flex-wrap:wrap;">
+                    <span class="badge" id="fc-front-cat">Đề FE</span>
+                    <span class="badge badge-warning" id="fc-front-multi" style="display:none;">Chọn nhiều đáp án</span>
+                  </div>
+                  <div class="fc-term" id="fc-front-term">Đang tải...</div>
+                  <div class="fc-options-preview" id="fc-front-options"></div>
+                </div>
+                <div style="font-size:0.86rem;color:var(--text-muted);text-align:center;padding-top:0.65rem;border-top:1px dashed var(--border);">
+                  👆 Nhấn vào thẻ hoặc bấm phím <strong>Space</strong> để lật xem Đáp án đúng &amp; Giải thích
+                </div>
+              </div>
+              <div class="flashcard-face back">
+                <div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.85rem;">
+                    <span class="badge badge-success">✅ Đáp án đúng &amp; Giải thích chi tiết</span>
+                    <span style="font-size:0.85rem;color:var(--text-muted);">Nhấn để lật lại câu hỏi</span>
+                  </div>
+                  <div id="fc-back-correct-box" class="fc-correct-box"></div>
+                  <div class="fc-answer" id="fc-back-ans" style="white-space:pre-line;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:center;justify-content:center;gap:0.85rem;flex-wrap:wrap;margin-top:1.1rem;">
+            <button class="btn btn-secondary" id="fc-prev-btn">&larr; Câu trước</button>
+            <span id="fc-counter" style="font-weight:800;min-width:120px;text-align:center;font-size:1.05rem;">1 / 231</span>
+            <button class="btn" id="fc-next-btn">Câu tiếp &rarr;</button>
+            <button class="btn btn-secondary" id="fc-master-btn">⭐ Đánh dấu Đã thuộc</button>
+          </div>
+        </div>
+
+        <!-- Mode 2: Grid/List View of All Cards -->
+        <div id="fc-grid-view" style="display:none;">
+          <div id="fc-grid-container" class="fc-grid-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 6: QUIZ & MOCK EXAM ==================== -->
+    <section class="tab-panel" id="tab-quiz">
+      <!-- Quiz Controls -->
+      <div class="card" style="margin-bottom:1.25rem;">
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:0.85rem;">
+          <div style="display:flex;gap:0.75rem;flex-wrap:wrap;flex:1;">
+            <div class="input-group" style="margin-bottom:0;min-width:210px;flex:1;">
+              <label>Chủ đề câu hỏi</label>
+              <select id="quiz-topic-select" class="form-control"></select>
+            </div>
+            <div class="input-group" style="margin-bottom:0;width:230px;">
+              <label>Chế độ làm bài</label>
+              <select id="quiz-mode-select" class="form-control">
+                <option value="practice">💡 Luyện tập (Hiện đáp án ngay)</option>
+                <option value="exam">⏱️ Thi thử FE (Bấm giờ & Chấm điểm)</option>
+              </select>
+            </div>
+            <div class="input-group" style="margin-bottom:0;width:150px;">
+              <label>Số lượng câu</label>
+              <select id="quiz-count-select" class="form-control">
+                <option value="10">10 câu</option>
+                <option value="20">20 câu</option>
+                <option value="999" selected>Tất cả câu</option>
+              </select>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.6rem;">
+            <span class="badge badge-warning mono" id="quiz-timer-box" style="display:none;font-size:0.95rem;padding:0.45rem 0.85rem;">⏱️ 30:00</span>
+            <button class="btn" id="quiz-start-btn">🚀 Bắt đầu / Làm mới</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Result Banner (shown after submit) -->
+      <div id="quiz-result-banner" style="display:none;"></div>
+
+      <!-- Quiz Workspace -->
+      <div class="quiz-layout">
+        <!-- Left: Active Question -->
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.85rem;">
+            <div id="quiz-q-meta" style="display:flex;align-items:center;gap:0.6rem;"></div>
+            <button class="btn btn-secondary btn-sm" id="quiz-flag-btn">🏳️ Gắn cờ xem lại</button>
+          </div>
+
+          <div id="quiz-q-text" class="quiz-question-text"></div>
+
+          <div id="quiz-options-list"></div>
+
+          <div id="quiz-explanation-box" class="explanation-box" style="display:none;"></div>
+
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--border);">
+            <button class="btn btn-secondary" id="quiz-prev-btn">&larr; Câu trước</button>
+            <button class="btn btn-success" id="quiz-submit-btn">🏁 Nộp bài & Chấm điểm</button>
+            <button class="btn" id="quiz-next-btn">Câu tiếp &rarr;</button>
+          </div>
+        </div>
+
+        <!-- Right: Question Palette -->
+        <div class="card" style="height:fit-content;">
+          <div class="card-header" style="margin-bottom:0.75rem;">
+            <h3 class="card-title" style="font-size:0.96rem;">🗺️ Danh sách câu hỏi</h3>
+          </div>
+          <div class="q-palette" id="quiz-palette-grid"></div>
+          <div style="margin-top:1rem;font-size:0.78rem;color:var(--text-secondary);display:flex;flex-direction:column;gap:0.3rem;">
+            <div>🟢 Xanh lá: Trả lời Đúng</div>
+            <div>🔴 Đỏ: Trả lời Sai</div>
+            <div>🔵 Xanh dương: Đã chọn đáp án</div>
+            <div>🟠 Viền vàng: Đang gắn cờ xem lại</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal: Add Custom Flashcard / Question -->
+  <div class="modal-backdrop" id="custom-modal">
+    <div class="modal-content">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+        <h3 style="font-size:1.15rem;font-weight:800;">➕ Tự bổ sung Flashcard hoặc Câu hỏi Trắc nghiệm</h3>
+        <button class="btn btn-secondary btn-sm" id="close-custom-modal-btn">Đóng ✕</button>
+      </div>
+
+      <div class="theory-box" style="margin-bottom:1.25rem;">
+        <h4>1. Thêm Flashcard mới</h4>
+        <div class="input-group">
+          <label>Chủ đề</label>
+          <input type="text" id="custom-fc-cat" class="form-control" value="Tự thêm" />
+        </div>
+        <div class="input-group">
+          <label>Mặt trước (Thuật ngữ / Câu hỏi)</label>
+          <input type="text" id="custom-fc-term" class="form-control" placeholder="VD: Giao thức OSPF hoạt động ở tầng mấy và dùng thuật toán gì?" />
+        </div>
+        <div class="input-group">
+          <label>Mặt sau (Đáp án / Giải thích)</label>
+          <textarea id="custom-fc-ans" class="form-control" rows="2" placeholder="VD: Tầng 3 (Network), dùng thuật toán Dijkstra (Shortest Path First)."></textarea>
+        </div>
+        <button class="btn btn-sm" id="add-custom-fc-btn">+ Lưu Flashcard</button>
+      </div>
+
+      <div class="theory-box">
+        <h4>2. Thêm Câu hỏi Trắc nghiệm FE mới</h4>
+        <div class="input-group">
+          <label>Chủ đề</label>
+          <input type="text" id="custom-q-topic" class="form-control" value="Đề sưu tầm" />
+        </div>
+        <div class="input-group">
+          <label>Nội dung câu hỏi</label>
+          <textarea id="custom-q-text" class="form-control" rows="2" placeholder="Nhập câu hỏi trắc nghiệm..."></textarea>
+        </div>
+        <div class="grid-2" style="margin-bottom:0.5rem;gap:0.5rem;">
+          <input type="text" id="custom-q-a" class="form-control" placeholder="Đáp án A" />
+          <input type="text" id="custom-q-b" class="form-control" placeholder="Đáp án B" />
+          <input type="text" id="custom-q-c" class="form-control" placeholder="Đáp án C" />
+          <input type="text" id="custom-q-d" class="form-control" placeholder="Đáp án D" />
+        </div>
+        <div style="display:flex;gap:0.5rem;margin-bottom:0.6rem;">
+          <select id="custom-q-ans" class="form-control" style="width:160px;">
+            <option value="0">Đáp án đúng: A</option>
+            <option value="1">Đáp án đúng: B</option>
+            <option value="2">Đáp án đúng: C</option>
+            <option value="3">Đáp án đúng: D</option>
+          </select>
+          <input type="text" id="custom-q-exp" class="form-control" placeholder="Giải thích ngắn gọn..." style="flex:1;" />
+        </div>
+        <button class="btn btn-sm" id="add-custom-q-btn">+ Lưu Câu hỏi vào Ngân hàng đề</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="app-toast">Đã lưu!</div>
+
+  <footer class="footer">
+    NWC204 Study Hub • Thiết kế chuyên biệt cho sinh viên ôn tập môn Computer Networking (Lý thuyết, Chia Subnet/VLSM, Cisco Packet Tracer PE & Thi thử FE). Tiến độ được lưu tự động trên trình duyệt.
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/subnet.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

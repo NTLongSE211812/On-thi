@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MAD101 Study Hub — Discrete Mathematics (FPT University)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-inner">
+      <a href="#" class="brand" onclick="switchTab('dashboard'); return false;">
+        <div class="brand-logo" style="background:linear-gradient(135deg,#8b5cf6,#ec4899);">MAD</div>
+        <div>
+          <span class="brand-title">MAD101 Study Hub</span>
+          <span class="brand-subtitle">Discrete Mathematics • Toán rời rạc FPT University (Ôn Lý thuyết, Công thức &amp; FE)</span>
+        </div>
+      </a>
+
+      <nav class="nav-tabs" aria-label="Điều hướng chính">
+        <button class="nav-tab active" data-tab="dashboard">📊 Tổng quan</button>
+        <button class="nav-tab" data-tab="cheatsheet">🎯 Công thức Trọng tâm</button>
+        <button class="nav-tab" data-tab="theory">🎓 Bài Giảng Dễ Hiểu</button>
+        <button class="nav-tab" data-tab="tools">🧮 Máy tính Toán rời rạc</button>
+        <button class="nav-tab" data-tab="flashcards">🃏 Flashcards</button>
+        <button class="nav-tab" data-tab="quiz">📝 Phòng Thi Thử FE (60p)</button>
+      </nav>
+
+      <div class="header-actions">
+        <a href="index.html" class="icon-btn" style="text-decoration:none;" title="Chuyển sang trang học môn NWC204 (Computer Networking)">🌐 Sang môn NWC204</a>
+        <div class="font-size-group" title="Điều chỉnh kích thước chữ trên toàn trang">
+          <button class="font-btn" data-scale="0.95" onclick="setFontScale(0.95)">A-</button>
+          <button class="font-btn active" data-scale="1.05" onclick="setFontScale(1.05)">A</button>
+          <button class="font-btn" data-scale="1.18" onclick="setFontScale(1.18)">A+</button>
+        </div>
+        <button class="icon-btn" id="theme-toggle-btn" title="Đổi giao diện Sáng / Tối">☀️ Light</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-container">
+    <!-- ==================== TAB 1: DASHBOARD ==================== -->
+    <section class="tab-panel active" id="tab-dashboard">
+      <!-- Quick Global Search -->
+      <div class="card" style="margin-bottom:1.5rem;">
+        <div class="card-header" style="margin-bottom:0.65rem;">
+          <div class="card-title">🔍 Tra cứu nhanh toàn bộ kiến thức &amp; Câu hỏi FE MAD101</div>
+          <span class="badge">Logic • Tập hợp • Modulo/RSA • Tổ hợp • Đồ thị • Cây</span>
+        </div>
+        <input
+          type="text"
+          id="global-search-input"
+          class="form-control"
+          placeholder="Nhập từ khóa bất kỳ: ví dụ 'contrapositive', 'Euler', 'Pigeonhole', 'RSA', 'm-ary tree', 'Master theorem', 'prefix'..."
+        />
+        <div
+          id="global-search-results"
+          style="display:none;margin-top:0.75rem;background:var(--bg-input);border:1px solid var(--border);border-radius:8px;max-height:360px;overflow-y:auto;"
+        ></div>
+      </div>
+
+      <!-- Progress Stats -->
+      <div class="grid-4">
+        <div class="card stat-card">
+          <span class="stat-label">📚 Chương lý thuyết đã học</span>
+          <div class="stat-value" id="stat-chapters-val">0/8</div>
+          <div class="stat-sub" id="stat-chapters-sub">Hoàn thành 0% chương trình</div>
+          <div class="progress-bar"><div class="progress-fill" id="stat-chapters-bar" style="width:0%"></div></div>
+        </div>
+
+        <div class="card stat-card">
+          <span class="stat-label">🃏 Flashcards đã thuộc</span>
+          <div class="stat-value" id="stat-fc-val">0/52</div>
+          <div class="stat-sub" id="stat-fc-sub">Đã thuộc 0% thẻ &amp; câu hỏi</div>
+          <div class="progress-bar"><div class="progress-fill" id="stat-fc-bar" style="width:0%"></div></div>
+        </div>
+
+        <div class="card stat-card">
+          <span class="stat-label">🏆 Điểm Thi thử FE cao nhất</span>
+          <div class="stat-value" id="stat-quiz-val">0%</div>
+          <div class="stat-sub" id="stat-quiz-sub">0 lần làm bài</div>
+          <div class="progress-bar"><div class="progress-fill" id="stat-quiz-bar" style="width:0%"></div></div>
+        </div>
+
+        <div class="card stat-card">
+          <span class="stat-label">🔥 Câu hỏi cần ôn lại (Làm sai)</span>
+          <div class="stat-value" id="stat-wrong-val" style="color:var(--warning);">0</div>
+          <div class="stat-sub">Tự động lưu khi làm trắc nghiệm</div>
+          <div style="margin-top:0.5rem;">
+            <button class="btn btn-secondary btn-sm" onclick="switchTab('quiz')">Ôn ngay &rarr;</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- FE Breakdown -->
+      <div class="card" id="fe-analysis-container" style="margin-bottom:1.5rem;"></div>
+
+      <!-- Quick Reference Summary Tables -->
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">📊 Bảng 5 Đồ thị Đặc biệt (Hỏi mọi kỳ FE)</h2>
+            <span class="badge badge-warning">Chapter 10</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Đồ thị</th>
+                  <th>Số đỉnh |V|</th>
+                  <th>Số cạnh |E|</th>
+                  <th>Bậc đỉnh</th>
+                  <th>Sắc số χ(G)</th>
+                </tr>
+              </thead>
+              <tbody class="mono">
+                <tr><td><strong>K_n</strong> (Đầy đủ)</td><td>n</td><td>n(n - 1) / 2</td><td>n - 1</td><td>n</td></tr>
+                <tr><td><strong>C_n</strong> (Vòng, n≥3)</td><td>n</td><td>n</td><td>2</td><td>2 (n chẵn) / 3 (n lẻ)</td></tr>
+                <tr><td><strong>W_n</strong> (Bánh xe)</td><td>n + 1</td><td>2n</td><td>3 và n</td><td>3 (n chẵn) / 4 (n lẻ)</td></tr>
+                <tr><td><strong>Q_n</strong> (n-Cube)</td><td>2^n</td><td>n · 2^(n-1)</td><td>n</td><td>2 (Phân đôi)</td></tr>
+                <tr><td><strong>K_(m,n)</strong> (Phân đôi)</td><td>m + n</td><td>m · n</td><td>m và n</td><td>2 (Phân đôi)</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">⚡ Công thức Cây m-phân Đầy đủ &amp; Đồ thị Phẳng</h2>
+            <span class="badge badge-success">Chapter 10 &amp; 11</span>
+          </div>
+          <div class="theory-box" style="margin-bottom:0.85rem;">
+            <h4>🌳 Cây m-phân đầy đủ (Full m-ary tree) có i đỉnh trong:</h4>
+            <ul>
+              <li>Tổng số đỉnh: <strong><code>n = m · i + 1</code></strong></li>
+              <li>Số đỉnh lá (leaves): <strong><code>l = (m - 1) · i + 1</code></strong></li>
+              <li>Liên hệ: <strong><code>n = i + l</code></strong> &amp; Số cạnh của cây: <strong><code>e = n - 1</code></strong></li>
+            </ul>
+          </div>
+          <div class="theory-box">
+            <h4>🗺️ Đồ thị Phẳng (Planar Graph) &amp; Định lý Bắt tay:</h4>
+            <ul>
+              <li>Định lý Bắt tay: <strong><code>∑ deg(v) = 2 · |E|</code></strong></li>
+              <li>Công thức Euler (số miền r): <strong><code>r = e - v + 2</code></strong></li>
+              <li>Chu trình Euler: <strong>Mọi đỉnh bậc CHẴN</strong> • Đường đi Euler: <strong>Đúng 2 đỉnh bậc LẺ</strong>.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 2: CHEAT SHEET (CÔNG THỨC TRỌNG TÂM) ==================== -->
+    <section class="tab-panel" id="tab-cheatsheet">
+      <div class="card" style="margin-bottom:1.5rem;">
+        <div class="card-header" style="margin-bottom:0.85rem;">
+          <div>
+            <h2 class="card-title">🎯 Sổ tay Tổng hợp Công thức &amp; Mẹo Giải Nhanh FE MAD101</h2>
+            <p style="font-size:0.95rem;color:var(--text-secondary);margin-top:0.25rem;">
+              Tổng hợp toàn bộ công thức tính nhanh cho 8 chuyên đề trong đề thi cuối kỳ MAD101.
+            </p>
+          </div>
+          <span class="badge badge-warning">Chuẩn Rosen</span>
+        </div>
+        <input
+          type="text"
+          id="cheatsheet-filter-input"
+          class="form-control"
+          placeholder="🔎 Gõ từ khóa để lọc nhanh công thức (VD: 'contrapositive', 'Euler', 'Pigeonhole', 'RSA', 'Master', 'm-ary', 'Preorder')..."
+        />
+      </div>
+
+      <div class="card" style="margin-bottom:1.5rem;">
+        <div class="card-header">
+          <h3 class="card-title">⚡ Bảng Phản Xạ: "Nhìn Dạng Bài Đề FE &rarr; Áp Dụng Công Thức Ngay"</h3>
+          <span class="badge">Mẹo Giải 15 Giây</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:20%;">Chuyên đề</th>
+                <th style="width:42%;">Khi đề bài hỏi...</th>
+                <th style="width:38%;">Công thức &amp; Cách bấm máy / Giải nhanh ✅</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="cs-item">
+                <td><span class="badge">Ch.1: Logic</span></td>
+                <td>Tìm mệnh đề tương đương với <code>p → q</code> hoặc tìm <strong>Contrapositive / Converse / Inverse</strong>?</td>
+                <td>• <strong>Tương đương với <code>p → q</code>:</strong> <strong><code>¬q → ¬p</code></strong> (Contrapositive) và <strong><code>¬p ∨ q</code></strong>.<br/>• <strong>Converse (Đảo):</strong> <code>q → p</code><br/>• <strong>Inverse (Nghịch đảo):</strong> <code>¬p → ¬q</code><br/>• <strong>Phủ định <code>¬(p → q)</code>:</strong> <strong><code>p ∧ ¬q</code></strong>.</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge">Ch.1: Suy diễn</span></td>
+                <td>Phân biệt 4 quy tắc suy diễn: <strong>Modus Ponens, Modus Tollens, Hypothetical Syllogism, Disjunctive Syllogism</strong>?</td>
+                <td>• <strong>Modus Ponens:</strong> <code>p</code> và <code>p → q</code> &rArr; <code>q</code><br/>• <strong>Modus Tollens:</strong> <code>¬q</code> và <code>p → q</code> &rArr; <code>¬p</code><br/>• <strong>Hypothetical Syllogism:</strong> <code>p → q</code> và <code>q → r</code> &rArr; <code>p → r</code><br/>• <strong>Disjunctive Syllogism:</strong> <code>p ∨ q</code> và <code>¬p</code> &rArr; <code>q</code>.</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge">Ch.2: Tập hợp &amp; Hàm</span></td>
+                <td>Cho <code>|A| = m</code> và <code>|B| = n</code>. Đếm số tập con, tổng số hàm, số hàm đơn ánh (One-to-one) và song ánh (Bijection)?</td>
+                <td>• Số phần tử của Power Set <code>|P(A)|</code> = <strong><code>2<sup>m</sup></code></strong><br/>• Tổng số hàm từ A sang B = <strong><code>n<sup>m</sup></code></strong><br/>• Số hàm <strong>đơn ánh (One-to-one)</strong> = <strong><code>P(n, m) = n! / (n - m)!</code></strong> (với m &le; n)<br/>• Số hàm <strong>song ánh (Bijection)</strong> = <strong><code>n!</code></strong> (khi m = n).</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge">Ch.3: Big-O</span></td>
+                <td>Sắp xếp tốc độ tăng trưởng của các hàm hoặc tìm Big-O của tích/tổng?</td>
+                <td>• Thứ tự tăng dần: <strong><code>1 &lt; log n &lt; n &lt; n log n &lt; n<sup>2</sup> &lt; n<sup>3</sup> &lt; 2<sup>n</sup> &lt; n!</code></strong>.<br/>• Tổng <code>f + g</code>: lấy hàm lớn hơn. Tích <code>f &middot; g</code>: nhân 2 bậc cao nhất với nhau.</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge badge-warning">Ch.4: Modulo &amp; RSA</span></td>
+                <td>Tính thương <code>q</code> và số dư <code>r</code> khi chia số âm <code>a &lt; 0</code> cho <code>d &gt; 0</code> (VD: <code>-23</code> chia <code>5</code>)?</td>
+                <td>• Nhớ: <strong>Số dư <code>r</code> LUÔN phải thỏa mãn <code>0 &le; r &lt; d</code></strong>!<br/>• Lấy <code>q = ⌊a / d⌋</code> (làm tròn xuống sâu hơn về âm): <code>-23 = 5 &times; (-5) + 2</code> &rArr; <strong><code>q = -5, r = 2</code></strong>.</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge badge-warning">Ch.4: Modulo &amp; RSA</span></td>
+                <td>Tìm nghịch đảo của <code>a mod m</code> hoặc tìm khóa giải mã <code>d</code> trong hệ mật <strong>RSA</strong> (cho <code>p, q, e</code>)?</td>
+                <td>• <strong>Nghịch đảo <code>a mod m</code>:</strong> Lấy từng đáp án nhân với <code>a</code> rồi chia <code>m</code>, đáp án nào dư <code>1</code> là đúng!<br/>• <strong>RSA:</strong> Tính <code>&phi;(n) = (p - 1)(q - 1)</code>. Tìm đáp án <code>d</code> sao cho <strong><code>(e &times; d) mod &phi;(n) = 1</code></strong>.</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge badge-warning">Ch.6: Đếm &amp; Tổ hợp</span></td>
+                <td>Nguyên lý Chuồng bồ câu (<strong>Pigeonhole</strong>) &amp; Chia kẹo Euler (<strong>Tổ hợp lặp</strong>)?</td>
+                <td>• <strong>Pigeonhole:</strong> Có <code>N</code> vật vào <code>k</code> hộp &rArr; có hộp chứa ít nhất <strong><code>⌈N / k⌉</code></strong> vật. Cần <strong><code>N = k(r - 1) + 1</code></strong> vật để chắc chắn có <code>r</code> vật cùng hộp.<br/>• <strong>Chia kẹo Euler</strong> (<code>x<sub>1</sub> + ... + x<sub>n</sub> = r</code> với <code>x<sub>i</sub> &ge; 0</code>): <strong><code>C(n + r - 1, r)</code></strong>.</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge badge-warning">Ch.8: Truy hồi &amp; Master</span></td>
+                <td>Giải hệ thức truy hồi <code>a_n = c₁·a_(n-1) + c₂·a_(n-2)</code> và Định lý Master <code>T(n) = a·T(n/b) + c·n^d</code>?</td>
+                <td>• <strong>Truy hồi:</strong> Giải PT đặc trưng <strong><code>r<sup>2</sup> - c<sub>1</sub>&middot;r - c<sub>2</sub> = 0</code></strong>. Nếu 2 nghiệm <code>r<sub>1</sub> &ne; r<sub>2</sub> &rArr; a<sub>n</sub> = &alpha;&middot;r<sub>1</sub><sup>n</sup> + &beta;&middot;r<sub>2</sub><sup>n</sup></code>; nếu nghiệm kép <code>r<sub>0</sub> &rArr; a<sub>n</sub> = (&alpha; + &beta;&middot;n)r<sub>0</sub><sup>n</sup></code>.<br/>• <strong>Master:</strong> So sánh <code>a</code> và <code>b<sup>d</sup></code>: Nếu <code>a = b<sup>d</sup> &rArr; O(n<sup>d</sup> log n)</code>; nếu <code>a &gt; b<sup>d</sup> &rArr; O(n<sup>log<sub>b</sub> a</sup>)</code>; nếu <code>a &lt; b<sup>d</sup> &rArr; O(n<sup>d</sup>)</code>.</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge badge-success">Ch.9: Quan hệ</span></td>
+                <td>Khi nào quan hệ <code>R</code> là <strong>Quan hệ tương đương (Equivalence)</strong> hoặc <strong>Thứ tự bộ phận (Poset)</strong>?</td>
+                <td>• <strong>Equivalence relation:</strong> Phản xạ (Reflexive) + <strong>Đối xứng (Symmetric)</strong> + Bắc cầu (Transitive).<br/>• <strong>Partial ordering (Poset):</strong> Phản xạ (Reflexive) + <strong>Phản xứng (Antisymmetric)</strong> + Bắc cầu (Transitive).</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge badge-success">Ch.10 &amp; 11: Đồ thị &amp; Cây</span></td>
+                <td>Tính số miền đồ thị phẳng, số lá của cây <code>m</code>-phân đầy đủ, và giá trị biểu thức Prefix / Postfix?</td>
+                <td>• <strong>Đồ thị phẳng:</strong> <strong><code>r = e - v + 2</code></strong> (nhớ tìm <code>e</code> từ <code>2e = &sum; deg(v)</code>).<br/>• <strong>Cây <code>m</code>-phân đầy đủ:</strong> <strong><code>n = m&middot;i + 1</code></strong> và <strong><code>l = (m - 1)&middot;i + 1</code></strong>.<br/>• <strong>Prefix</strong> (quét từ phải sang trái) • <strong>Postfix</strong> (quét từ trái sang phải).</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge">File Thầy Phú (Mục 1 &amp; 2)</span></td>
+                <td><strong>Luật hấp thụ</strong>, <strong>Hàm ngược <code>f<sup>-1</sup>(y)</code></strong>, <strong>Hàm hợp <code>(g ◦ f)(x)</code></strong> &amp; <strong>Tổng kép <code>&sum;&sum;</code></strong>?</td>
+                <td>• <strong>Luật hấp thụ:</strong> <strong><code>p &or; (p &and; q) &equiv; p</code></strong> và <strong><code>p &and; (p &or; q) &equiv; p</code></strong>.<br/>• <strong>Hàm ngược:</strong> <code>f(x) = ax + b &rArr; <strong>f<sup>-1</sup>(y) = (y - b)/a</strong></code> (chỉ có khi f là song ánh).<br/>• <strong>Hàm hợp:</strong> <code>(g ◦ f)(x) = g(f(x))</code> (thay nguyên biểu thức f(x) vào biến x của g).</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge badge-warning">File Thầy Phú (Mục 3 &amp; 4)</span></td>
+                <td><strong>Đổi tiền Tham lam (Greedy)</strong>, <strong>Số giả ngẫu nhiên</strong> &amp; <strong>Mã hóa Bảng chữ cái (STOP &rarr; MPAD)</strong>?</td>
+                <td>• <strong>Greedy Change-Making:</strong> Luôn lấy tối đa đồng xu mệnh giá lớn nhất trước (VD: 23 = 2&times;10 + 1&times;2 + 1&times;1 = <strong>4 xu</strong>).<br/>• <strong>Số giả ngẫu nhiên:</strong> <strong><code>x<sub>n+1</sub> = (a&middot;x<sub>n</sub> + c) mod m</code></strong>.<br/>• <strong>Mã hóa chữ cái (A=0..Z=25):</strong> Thay số thứ tự chữ cái vào <code>f(x) = (ax + b) mod 26</code>.</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge badge-warning">File Thầy Phú (Mục 6.4 &amp; 6.5)</span></td>
+                <td>Đếm chuỗi bit <strong>không có 2 số 1 liên tiếp</strong> &amp; Công thức tính chính xác <code>C<sub>1</sub>, C<sub>2</sub></code> của <strong>Định lý Master</strong>?</td>
+                <td>• <strong>Không có 2 số 1 liên tiếp:</strong> <code>a<sub>n</sub> = a<sub>n-1</sub> + a<sub>n-2</sub></code> với <strong><code>a<sub>1</sub>=2, a<sub>2</sub>=3, a<sub>3</sub>=5, a<sub>4</sub>=8, a<sub>5</sub>=13, a<sub>6</sub>=21</code></strong>.<br/>• <strong>Master chính xác</strong> (<code>f(n) = a&middot;f(n/b) + c</code>): <strong><code>f(n) = C<sub>1</sub>&middot;n<sup>log<sub>b</sub> a</sup> + C<sub>2</sub></code></strong> với <strong><code>C<sub>1</sub> = f(1) + c/(a-1)</code></strong> và <strong><code>C<sub>2</sub> = -c/(a-1)</code></strong>.</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge badge-success">File Thầy Phú (Mục 7 &amp; 8)</span></td>
+                <td>Phân biệt <strong>Đồ thị Đơn / Đa / Giả</strong>, <strong>Đỉnh cắt</strong>, <strong>Cây cân bằng</strong>, <strong>Mã tiền tố (Prefix code)</strong> &amp; <strong>Prim vs. Kruskal</strong>?</td>
+                <td>• <strong>Simple graph:</strong> Không cạnh bội, không khuyên | <strong>Multigraph:</strong> Có cạnh bội | <strong>Pseudograph:</strong> Có cả cạnh bội &amp; khuyên (self-loop).<br/>• <strong>Cây cân bằng:</strong> Mọi lá ở mức <code>h</code> hoặc <code>h - 1</code>.<br/>• <strong>Prefix code:</strong> Không có mã nào là phần đầu của mã khác.<br/>• <strong>Prim:</strong> Mở rộng từ 1 đỉnh | <strong>Kruskal:</strong> Sắp xếp tất cả cạnh tăng dần rồi chọn cạnh không tạo chu trình.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- STEP BY STEP EASY GUIDE FOR ALL 8 CORE TOPICS -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h3 class="card-title">🌟 Cẩm Nang Hiểu Bản Chất &amp; Giải Chi Tiết 8 Chủ Đề Trọng Tâm MAD101 (Dễ Hiểu Nhất)</h3>
+            <p style="font-size:0.92rem;color:var(--text-secondary);">Giải thích bằng ngôn ngữ đời thường kèm ví dụ tính từng bước như trong bài thi thật:</p>
+          </div>
+          <span class="badge badge-success">Đầy Đủ 100%</span>
+        </div>
+
+        <div class="grid-2">
+          <div class="theory-box cs-item">
+            <h4>1. Logic Mệnh Đề &amp; Quy Tắc Suy Diễn (Chương 1)</h4>
+            <ul>
+              <li><strong>Cách nhớ Phép kéo theo <code>p &rarr; q</code> ("Nếu p thì q"):</strong>
+                <br/>Hãy tưởng tượng lời hứa: <em>"Nếu bạn được 10 điểm (p), tôi sẽ thưởng trà sữa (q)"</em>. Lời hứa chỉ bị coi là <strong>NÓI DỐI (False)</strong> trong trường hợp duy nhất: <strong>Bạn được 10 điểm (p = True) nhưng tôi KHÔNG thưởng (q = False)</strong>. Mọi trường hợp khác đều là <strong>True</strong>!
+              </li>
+              <li><strong>3 Biến thể của <code>p &rarr; q</code> (Rất hay hỏi):</strong>
+                <br/>• <strong>Converse (Đảo):</strong> <code>q &rarr; p</code> (Đổi chỗ 2 vế).
+                <br/>• <strong>Inverse (Nghịch đảo):</strong> <code>&not;p &rarr; &not;q</code> (Giữ nguyên vị trí, thêm NOT vào cả 2 vế).
+                <br/>• <strong>Contrapositive (Phản đảo):</strong> <code>&not;q &rarr; &not;p</code> (Vừa đổi chỗ vừa thêm NOT &rarr; <strong>LUÔN TƯƠNG ĐƯƠNG với <code>p &rarr; q</code></strong>!).
+              </li>
+              <li><strong>2 Công thức biến đổi quan trọng nhất:</strong>
+                <br/>• <code>p &rarr; q &equiv; &not;p &or; q</code> (Đổi kéo theo sang tuyển OR).
+                <br/>• <code>&not;(p &rarr; q) &equiv; p &and; &not;q</code> (Phủ định của kéo theo).
+              </li>
+              <li><strong>Phủ định lượng từ:</strong> Đổi <code>&forall;</code> thành <code>&exist;</code> (hoặc <code>&exist;</code> thành <code>&forall;</code>) rồi phủ định mệnh đề bên trong. VD: <code>&not;[&forall;x (x<sup>2</sup> &gt; x)] &equiv; &exist;x (x<sup>2</sup> &le; x)</code>.</li>
+            </ul>
+          </div>
+
+          <div class="theory-box cs-item">
+            <h4>2. Tập Hợp, Hàm Số &amp; Hàm Sàn / Trần (Chương 2)</h4>
+            <ul>
+              <li><strong>Đếm số phần tử của Tập lũy thừa <code>P(A)</code>:</strong>
+                <br/>Nếu tập <code>A</code> có <code>n</code> phần tử thì tập hợp chứa mọi tập con của <code>A</code> có <strong><code>|P(A)| = 2<sup>n</sup></code></strong> phần tử.
+                <br/><em>Ví dụ:</em> <code>A = {a, b, {c, d}, &empty;}</code> có <strong>4 phần tử</strong> (vì <code>{c, d}</code> được tính là 1 phần tử) &rArr; <code>|P(A)| = 2<sup>4</sup> = 16</code>.
+              </li>
+              <li><strong>Phân biệt Đơn ánh, Toàn ánh, Song ánh (<code>f: A &rarr; B</code> với <code>|A| = m, |B| = n</code>):</strong>
+                <br/>• <strong>Đơn ánh (One-to-one / Injective):</strong> Mỗi người ở A chọn 1 ghế RIÊNG ở B (không ai chung ghế). Điều kiện: <code>m &le; n</code>. Số hàm đơn ánh = <strong><code>P(n, m) = n &times; (n-1) &times; ... &times; (n-m+1)</code></strong>.
+                <br/>• <strong>Toàn ánh (Onto / Surjective):</strong> Mọi ghế ở B đều có ít nhất 1 người ngồi (không ghế nào trống). Điều kiện: <code>m &ge; n</code>.
+                <br/>• <strong>Song ánh (Bijection):</strong> Vừa đơn ánh vừa toàn ánh (<code>m = n</code>, số hàm = <strong><code>n!</code></strong>).
+                <br/>• <strong>Tổng số hàm bất kỳ từ A sang B:</strong> <strong><code>n<sup>m</sup></code></strong> (Mỗi phần tử trong m phần tử của A có n lựa chọn ở B).
+              </li>
+              <li><strong>Hàm Sàn <code>⌊x⌋</code> (làm tròn xuống) &amp; Hàm Trần <code>⌈x⌉</code> (làm tròn lên):</strong>
+                <br/>Chú ý với số âm: <code>-3.4</code> nằm giữa <code>-4</code> và <code>-3</code> &rArr; làm tròn xuống là <strong><code>⌊-3.4⌋ = -4</code></strong>, làm tròn lên là <strong><code>⌈-3.4⌉ = -3</code></strong>.
+              </li>
+            </ul>
+          </div>
+
+          <div class="theory-box cs-item">
+            <h4>3. Độ Phức Tạp Thuật Toán Big-O (Chương 3)</h4>
+            <ul>
+              <li><strong>Quy tắc tìm nhanh Big-O của một biểu thức:</strong>
+                <br/>1. <strong>Bỏ mọi hằng số nhân</strong> và <strong>chỉ giữ lại thành phần tăng nhanh nhất</strong> khi <code>n &rarr; &infin;</code>.
+                <br/>2. <strong>Bảng xếp hạng tốc độ tăng (từ nhỏ đến lớn):</strong>
+                <br/>👉 <strong><code>O(1) &lt; O(log n) &lt; O(n) &lt; O(n log n) &lt; O(n<sup>2</sup>) &lt; O(n<sup>3</sup>) &lt; O(2<sup>n</sup>) &lt; O(n!)</code></strong>
+              </li>
+              <li><strong>Ví dụ giải nhanh:</strong>
+                <br/>Cho <code>f(n) = (n<sup>2</sup> + 8n)(n&middot;log n + 5) + 10n<sup>3</sup></code>:
+                <br/>• Trong ngoặc thứ nhất, bậc lớn nhất là <code>n<sup>2</sup></code>.
+                <br/>• Trong ngoặc thứ hai, bậc lớn nhất là <code>n&middot;log n</code>.
+                <br/>• Nhân 2 ngoặc lại được <code>n<sup>3</sup>&middot;log n</code>. So với <code>10n<sup>3</sup></code> thì <code>n<sup>3</sup>&middot;log n</code> lớn hơn &rArr; Đáp án: <strong><code>O(n<sup>3</sup> log n)</code></strong>!
+              </li>
+            </ul>
+          </div>
+
+          <div class="theory-box cs-item">
+            <h4>4. Số Học Modulo, GCD/LCM, Fermat &amp; Mật Mã RSA (Chương 4)</h4>
+            <ul>
+              <li><strong>Phép chia số âm <code>a = d&middot;q + r</code> (Số dư <code>r</code> không bao giờ âm!):</strong>
+                <br/>Ví dụ chia <code>-23</code> cho <code>5</code>: Ta lấy thương âm nhỏ hơn là <code>q = -5</code> (vì <code>5 &times; (-5) = -25</code>), khi đó số dư <code>r = -23 - (-25) = 2</code> (thỏa mãn <code>0 &le; 2 &lt; 5</code>).
+              </li>
+              <li><strong>Tìm Nghịch đảo Modulo (Tìm <code>x</code> sao cho <code>a&middot;x &equiv; 1 (mod m)</code>):</strong>
+                <br/><em>Ví dụ:</em> Tìm nghịch đảo của <code>5 mod 17</code> với các đáp án A. 3, B. 7, C. 10, D. 14.
+                <br/>&rarr; Thử lấy <code>5 &times; 7 = 35</code>. Chia <code>35</code> cho <code>17</code> được <code>2</code> dư <strong><code>1</code></strong> &rArr; Khoanh ngay <strong><code>7</code></strong>!
+              </li>
+              <li><strong>Giải bài toán RSA trong 3 bước:</strong>
+                <br/><em>Đề cho:</em> <code>p = 5, q = 11, e = 3</code>. Tìm khóa giải mã <code>d</code>?
+                <br/>• <strong>Bước 1:</strong> Tính <code>&phi;(n) = (p - 1)(q - 1) = 4 &times; 10 = 40</code>.
+                <br/>• <strong>Bước 2:</strong> Khóa <code>d</code> thỏa mãn <code>e &times; d &equiv; 1 (mod 40)</code>, tức <code>3 &times; d</code> chia <code>40</code> dư <code>1</code>.
+                <br/>• <strong>Bước 3:</strong> Thử đáp án <code>d = 27</code>: <code>3 &times; 27 = 81 = 2 &times; 40 + 1</code> (dư 1) &rArr; Khoanh <strong><code>d = 27</code></strong>!
+              </li>
+            </ul>
+          </div>
+
+          <div class="theory-box cs-item">
+            <h4>5. Nguyên Lý Chuồng Bồ Câu, Tổ Hợp Lặp &amp; Đếm Chuỗi (Chương 6)</h4>
+            <ul>
+              <li><strong>Nguyên lý Chuồng bồ câu (Pigeonhole Principle):</strong>
+                <br/>• <em>Bài toán 1:</em> Có 100 sinh viên (<code>N = 100</code>) sinh trong 12 tháng (<code>k = 12</code>). Có ít nhất bao nhiêu người cùng tháng sinh? &rArr; <strong><code>⌈100 / 12⌉ = ⌈8.33⌉ = 9</code> người</strong>.
+                <br/>• <em>Bài toán 2:</em> Có 5 mức điểm A, B, C, D, F (<code>k = 5</code>). Cần tối thiểu bao nhiêu sinh viên để chắc chắn có ít nhất <code>r = 6</code> người cùng điểm? &rArr; <strong><code>N = k&middot;(r - 1) + 1 = 5 &times; (6 - 1) + 1 = 26</code> người</strong>.
+              </li>
+              <li><strong>Chia kẹo Euler / Tổ hợp lặp (Chọn <code>r</code> vật từ <code>n</code> loại, hoặc phương trình <code>x<sub>1</sub> + x<sub>2</sub> + ... + x<sub>n</sub> = r</code>):</strong>
+                <br/>• Công thức: <strong><code>C(n + r - 1, r)</code></strong>.
+                <br/>• <em>Ví dụ:</em> Số nghiệm nguyên không âm của <code>x<sub>1</sub> + x<sub>2</sub> + x<sub>3</sub> + x<sub>4</sub> = 15</code> (có <code>n = 4</code> biến, tổng <code>r = 15</code>) là <code>C(4 + 15 - 1, 15) = C(18, 15) = C(18, 3) =</code> <strong><code>816</code></strong>.
+              </li>
+              <li><strong>Đếm số chuỗi hoán vị từ có chữ cái lặp:</strong>
+                <br/><em>Ví dụ:</em> Từ <code>SUCCESS</code> có 7 chữ cái, trong đó <code>S</code> lặp 3 lần, <code>C</code> lặp 2 lần &rArr; Số chuỗi = <strong><code>7! / (3! &times; 2!) = 5040 / 12 = 420</code></strong>.
+              </li>
+            </ul>
+          </div>
+
+          <div class="theory-box cs-item">
+            <h4>6. Hệ Thức Truy Hồi, Định Lý Master &amp; Quan Hệ (Chương 8 &amp; 9)</h4>
+            <ul>
+              <li><strong>Giải hệ thức truy hồi <code>a<sub>n</sub> = c<sub>1</sub>&middot;a<sub>n-1</sub> + c<sub>2</sub>&middot;a<sub>n-2</sub></code>:</strong>
+                <br/><em>Ví dụ:</em> <code>a<sub>n</sub> = 5a<sub>n-1</sub> - 6a<sub>n-2</sub></code> &rArr; Chuyển vế thành phương trình đặc trưng: <code>r<sup>2</sup> - 5r + 6 = 0</code>.
+                <br/>Bấm máy giải PT bậc 2 được 2 nghiệm <code>r<sub>1</sub> = 2, r<sub>2</sub> = 3</code> &rArr; Nghiệm tổng quát: <strong><code>a<sub>n</sub> = &alpha;&middot;2<sup>n</sup> + &beta;&middot;3<sup>n</sup></code></strong>. (Nếu có nghiệm kép <code>r<sub>0</sub></code> thì nhân thêm <code>n</code> vào số hạng thứ hai: <code>a<sub>n</sub> = (&alpha; + &beta;&middot;n)r<sub>0</sub><sup>n</sup></code>).
+              </li>
+              <li><strong>Định lý Master cho <code>T(n) = a&middot;T(n/b) + c&middot;n<sup>d</sup></code>:</strong>
+                <br/>Tính giá trị <code>b<sup>d</sup></code> rồi so với <code>a</code>:
+                <br/>• Nếu <code>a = b<sup>d</sup></code> &rArr; <strong><code>O(n<sup>d</sup> log n)</code></strong> | Nếu <code>a &gt; b<sup>d</sup></code> &rArr; <strong><code>O(n<sup>log<sub>b</sub> a</sup>)</code></strong> | Nếu <code>a &lt; b<sup>d</sup></code> &rArr; <strong><code>O(n<sup>d</sup>)</code></strong>.
+              </li>
+              <li><strong>Quan hệ (Relations) trên tập A (<code>|A| = n</code>):</strong>
+                <br/>• <strong>Phản xạ (Reflexive):</strong> Có đủ mọi cặp <code>(a, a)</code> với mọi <code>a &isin; A</code>.
+                <br/>• <strong>Đối xứng (Symmetric):</strong> Hễ có <code>(a, b)</code> là phải có <code>(b, a)</code>.
+                <br/>• <strong>Phản xứng (Antisymmetric):</strong> Không bao giờ có đồng thời cả <code>(a, b)</code> và <code>(b, a)</code> khi <code>a &ne; b</code>.
+                <br/>• <strong>Bắc cầu (Transitive):</strong> Hễ có <code>(a, b)</code> và <code>(b, c)</code> thì phải có mặt <code>(a, c)</code>.
+              </li>
+            </ul>
+          </div>
+
+          <div class="theory-box cs-item">
+            <h4>7. Lý Thuyết Đồ Thị: Bắt Tay, Euler &amp; Đồ Thị Phẳng (Chương 10)</h4>
+            <ul>
+              <li><strong>Định lý Bắt tay (Handshaking Theorem):</strong>
+                <br/>Tổng bậc của tất cả các đỉnh luôn gấp đôi số cạnh: <strong><code>&sum; deg(v) = 2&middot;|E|</code></strong>.
+                <br/><em>Ví dụ:</em> Đồ thị có 15 cạnh, trong đó có 6 đỉnh bậc 3, các đỉnh còn lại có bậc 2. Hỏi có tất cả bao nhiêu đỉnh?
+                <br/>&rarr; Tổng bậc = <code>2 &times; 15 = 30</code>. Gọi <code>x</code> là số đỉnh bậc 2: <code>6&times;3 + 2x = 30 &rArr; 2x = 12 &rArr; x = 6</code>. Tổng số đỉnh = <code>6 + 6 =</code> <strong><code>12 đỉnh</code></strong>!
+              </li>
+              <li><strong>Chu trình Euler vs. Đường đi Euler:</strong>
+                <br/>• <strong>Chu trình Euler (Euler circuit):</strong> Đồ thị liên thông và <strong>100% các đỉnh đều có bậc CHẴN</strong>.
+                <br/>• <strong>Đường đi Euler (Euler path):</strong> Đồ thị liên thông và có <strong>ĐÚNG 2 đỉnh bậc LẺ</strong> (hoặc 0 đỉnh lẻ).
+              </li>
+              <li><strong>Công thức Euler tính số miền (regions) của Đồ thị phẳng:</strong>
+                <br/>👉 <strong><code>r = e - v + 2</code></strong> (Số miền = Số cạnh - Số đỉnh + 2).
+                <br/><em>Ví dụ:</em> Đồ thị phẳng liên thông có <code>v = 12</code> đỉnh, mỗi đỉnh đều có bậc 3.
+                <br/>&rarr; Tìm số cạnh: <code>2e = 12 &times; 3 = 36 &rArr; e = 18</code>. Số miền <code>r = 18 - 12 + 2 =</code> <strong><code>8 miền</code></strong>!
+              </li>
+            </ul>
+          </div>
+
+          <div class="theory-box cs-item">
+            <h4>8. Cây (Trees), Cây m-phân &amp; Tính Biểu Thức Prefix / Postfix (Chương 11)</h4>
+            <ul>
+              <li><strong>Cây <code>m</code>-phân đầy đủ (Full <code>m</code>-ary tree) có <code>i</code> đỉnh trong (internal vertices):</strong>
+                <br/>Mỗi đỉnh trong đẻ ra đúng <code>m</code> đỉnh con, cộng thêm 1 đỉnh Gốc ban đầu:
+                <br/>• <strong>Tổng số đỉnh: <code>n = m&middot;i + 1</code></strong>
+                <br/>• <strong>Số lá (leaves): <code>l = n - i = (m - 1)&middot;i + 1</code></strong>
+                <br/>• <strong>Số cạnh của mọi cây <code>n</code> đỉnh: <code>e = n - 1</code></strong>
+              </li>
+              <li><strong>Cách tính Biểu thức Tiền tố (Prefix) &amp; Hậu tố (Postfix):</strong>
+                <br/>• <strong>Prefix (Toán tử đứng trước, VD: <code>+ - * 2 3 5 / ^ 2 3 4</code>):</strong> Tìm cụm <code>(Toán tử + 2 số ngay sau nó)</code> để thu gọn dần:
+                <br/>&nbsp;&nbsp;<code>(* 2 3) = 6</code> &rarr; <code>(- 6 5) = 1</code>; <code>(^ 2 3) = 8</code> &rarr; <code>(/ 8 4) = 2</code>; Cuối cùng <code>(+ 1 2) =</code> <strong><code>3</code></strong>.
+                <br/>• <strong>Postfix (Toán tử đứng sau, VD: <code>7 2 3 * - 4 ^ 9 3 / +</code>):</strong> Đọc từ trái sang phải, gặp toán tử thì tính cho <strong>2 số đứng ngay trước nó</strong>:
+                <br/>&nbsp;&nbsp;<code>2 3 * = 6</code> &rarr; <code>7 6 - = 1</code> &rarr; <code>1 4 ^ = 1</code>; <code>9 3 / = 3</code>; Cuối cùng <code>1 3 + =</code> <strong><code>4</code></strong>.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 3: INTERACTIVE CLASSROOM & 8 CHAPTERS THEORY ==================== -->
+    <section class="tab-panel" id="tab-theory">
+      <div class="card" style="margin-bottom:1.25rem;border:1px solid var(--accent);">
+        <div class="card-header" style="margin-bottom:0;">
+          <div>
+            <h2 class="card-title">🎓 Lớp Học MAD101 — Giảng Dạy Lý Thuyết Dễ Hiểu Từ Mất Gốc</h2>
+            <p style="font-size:0.93rem;color:var(--text-secondary);margin-top:0.25rem;">
+              Mỗi bài giảng giải thích <strong>bản chất bằng ví dụ đời thường</strong>, chốt công thức cốt lõi, <strong>giải mẫu từng bước câu đề thi thật FPT</strong>, chỉ rõ <strong>bẫy hay sai từ 6 đề FA25–SU26</strong> và có <strong>Mini-Quiz kiểm tra hiểu bài ngay</strong>!
+            </p>
+          </div>
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+            <button class="btn btn-sm" id="theory-mode-classroom-btn" onclick="switchTheoryMode('classroom')">👨‍🏫 Lớp Học Giảng Dạy (8 Bài)</button>
+            <button class="btn btn-secondary btn-sm" id="theory-mode-summary-btn" onclick="switchTheoryMode('summary')">📚 Tóm Tắt Chi Tiết (File Thầy Phú)</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- View 1: Interactive Classroom (Default) -->
+      <div id="theory-classroom-view" style="display:grid;grid-template-columns:minmax(240px,310px) 1fr;gap:1.25rem;align-items:start;">
+        <div class="card" style="padding:1rem;">
+          <div style="font-weight:800;font-size:0.95rem;margin-bottom:0.75rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.04em;">
+            📖 Giáo Trình 8 Bài Giảng
+          </div>
+          <div id="lessons-sidebar" style="display:flex;flex-direction:column;gap:0.45rem;"></div>
+        </div>
+        <div id="lesson-stage"></div>
+      </div>
+
+      <!-- View 2: Full 8 Chapters Summary (Accordion) -->
+      <div id="theory-summary-view" style="display:none;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
+          <h2 style="font-size:1.25rem;font-weight:800;">📖 Nội dung Tóm Tắt Toàn Tập 8 Chương MAD101 (File Thầy Trần Hoà Phú)</h2>
+          <span style="font-size:0.9rem;color:var(--text-secondary);">Tích vào ô vuông ở mỗi chương để đánh dấu hoàn thành</span>
+        </div>
+        <div class="chapter-list" id="chapters-container"></div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 4: INTERACTIVE DISCRETE MATH CALCULATORS ==================== -->
+    <section class="tab-panel" id="tab-tools">
+      <!-- Casio fx-580VN X & Mental Calculation Shortcuts -->
+      <div class="card" style="margin-bottom:1.5rem;">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">⚡ Bí Kíp Bấm Máy Tính Casio fx-580VN X &amp; Mẹo Tính Nhẩm 5 Giây Phòng Thi FE</h2>
+            <p style="font-size:0.93rem;color:var(--text-secondary);margin-top:0.2rem;">
+              Áp dụng các tổ hợp phím Casio và mẹo thử đáp án ngược dưới đây để giải xong mọi câu tính toán MAD101 trong 5 – 10 giây:
+            </p>
+          </div>
+          <span class="badge badge-warning">Casio &amp; Mẹo Tốc Độ</span>
+        </div>
+
+        <div class="grid-2">
+          <div class="theory-box">
+            <h4>🖩 1. Các Phím Chức Năng Vàng Trên Casio fx-580VN X</h4>
+            <ul>
+              <li><strong>Tìm <code>GCD(a, b)</code> và <code>LCM(a, b)</code>:</strong>
+                <br/>• Bấm <code>ALPHA</code> + <code>&times;</code> (hiện chữ <code>GCD(</code>) &rarr; nhập <code>a</code> &rarr; bấm <code>SHIFT</code> + <code>)</code> (dấu phẩy <code>,</code>) &rarr; nhập <code>b)</code> &rarr; bấm <code>=</code>.
+                <br/>• Bấm <code>ALPHA</code> + <code>&divide;</code> (hiện chữ <code>LCM(</code>) &rarr; nhập <code>a, b)</code> &rarr; bấm <code>=</code>.
+              </li>
+              <li><strong>Tìm Thương <code>q</code> và Số dư <code>r</code> (Phép chia có dư <code>÷R</code>):</strong>
+                <br/>• Nhập số dương <code>a</code> &rarr; bấm <code>ALPHA</code> + <code>[phím phân số]</code> (hiện <code>&divide;R</code>) &rarr; nhập <code>m</code> &rarr; bấm <code>=</code> (Máy hiện ngay <code>Thương</code> và <code>R= Số dư</code>!).
+              </li>
+              <li><strong>Phân tích ra Thừa số Nguyên tố (<code>FACT</code>):</strong>
+                <br/>• Nhập số <code>N</code> &rarr; bấm <code>=</code> &rarr; bấm <code>SHIFT</code> + <code>[phím độ ° ' "]</code> (<code>FACT</code>) &rarr; Máy hiện ngay dạng <code>2<sup>a</sup> &times; 3<sup>b</sup> &times; 5<sup>c</sup>...</code>!
+              </li>
+              <li><strong>Đổi Cơ số (Thập phân DEC &harr; Nhị phân BIN &harr; Bát phân OCT &harr; Thập lục phân HEX):</strong>
+                <br/>• Bấm <code>MENU</code> &rarr; <code>3</code> (Hệ cơ số <code>BASE-N</code>) &rarr; Nhập số ở <code>DEC</code> &rarr; bấm <code>=</code> &rarr; bấm phím <code>x<sup>2</sup> (DEC)</code>, <code>x<sup>y</sup> (HEX)</code>, <code>log (BIN)</code>, <code>ln (OCT)</code> để đổi tức thì!
+              </li>
+              <li><strong>Tính Tổng Sigma <code>&sum;</code>, Tổ hợp <code>nCr</code>, Chỉnh hợp <code>nPr</code>:</strong>
+                <br/>• Tổng <code>&sum;</code>: Bấm <code>SHIFT</code> + <code>x</code> (phím tích phân).
+                <br/>• Tổ hợp <code>C(n, r)</code>: Nhập <code>n</code> &rarr; bấm <code>SHIFT</code> + <code>&divide;</code> (<code>C</code>) &rarr; nhập <code>r</code>.
+                <br/>• Chỉnh hợp <code>P(n, r)</code>: Nhập <code>n</code> &rarr; bấm <code>SHIFT</code> + <code>&times;</code> (<code>P</code>) &rarr; nhập <code>r</code>.
+              </li>
+            </ul>
+          </div>
+
+          <div class="theory-box">
+            <h4>🚀 2. Mẹo Tính Nhẩm &amp; Thử Đáp Án Ngược Trong 5 Giây</h4>
+            <ul>
+              <li><strong>Mẹo 1 — Tìm Nghịch đảo Modulo &amp; Khóa <code>d</code> của RSA bằng TABLE (<code>MENU 8</code>):</strong>
+                <br/>Khi đề hỏi nghịch đảo của <code>a mod m</code> (hoặc tìm <code>d</code> sao cho <code>e&middot;d &equiv; 1 mod &phi;(n)</code>):
+                <br/>👉 <strong>Cách nhanh nhất:</strong> Lấy <code>a</code> nhân lần lượt với 4 đáp án A, B, C, D rồi trừ đi <code>1</code>, kết quả nào <strong>chia hết cho <code>m</code></strong> thì khoanh luôn!
+              </li>
+              <li><strong>Mẹo 2 — Nhận diện nhanh Nghiệm Hệ thức truy hồi <code>a<sub>n</sub> = c<sub>1</sub>a<sub>n-1</sub> + c<sub>2</sub>a<sub>n-2</sub></code>:</strong>
+                <br/>• Mở <code>MENU 9 &rarr; 2 &rarr; 2</code> (Giải PT bậc 2): Nhập hệ số <code>1</code>, <code>-c<sub>1</sub></code>, <code>-c<sub>2</sub></code> &rArr; Ra ngay 2 nghiệm <code>r<sub>1</sub>, r<sub>2</sub></code>!
+                <br/>• Nếu đề cho sẵn <code>a<sub>0</sub>, a<sub>1</sub></code> và hỏi công thức tổng quát <code>a<sub>n</sub></code> nào đúng trong 4 đáp án A, B, C, D &rArr; <strong>Thay trực tiếp <code>n = 0</code> và <code>n = 1</code> vào 4 đáp án</strong>, đáp án nào khớp <code>a<sub>0</sub></code> và <code>a<sub>1</sub></code> là ĐÚNG (không cần giải hệ tìm <code>&alpha;, &beta;</code>)!
+              </li>
+              <li><strong>Mẹo 3 — Tính Lũy thừa lớn <code>a<sup>b</sup> mod p</code> (khi <code>p</code> nguyên tố):</strong>
+                <br/>• Bấm lấy số mũ <code>b</code> chia cho <code>(p - 1)</code> lấy phần dư <code>r = b mod (p - 1)</code>.
+                <br/>• Khi đó <strong><code>a<sup>b</sup> mod p = a<sup>r</sup> mod p</code></strong>! (Ví dụ: <code>3<sup>202</sup> mod 7</code> &rarr; lấy <code>202 mod 6 = 4</code> &rarr; chỉ cần tính <code>3<sup>4</sup> mod 7 = 81 mod 7 = 4</code>!).
+              </li>
+              <li><strong>Mẹo 4 — Cây <code>m</code>-phân đầy đủ:</strong>
+                <br/>Nhớ rằng tổng số đỉnh <code>n = m&middot;i + 1</code> khi chia cho <code>m</code> <strong>luôn dư 1</strong>, và số lá <code>l = (m - 1)&middot;i + 1</code> khi chia cho <code>(m - 1)</code> cũng <strong>luôn dư 1</strong>!
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <!-- Tool 1: Modulo, GCD, LCM, Inverse -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">🔢 1. Máy tính Chia Nguyên (div/mod), Euclid (GCD/LCM) &amp; Nghịch đảo Modulo</h3>
+              <p style="font-size:0.88rem;color:var(--text-secondary);">Hỗ trợ cả số âm, tìm nghịch đảo a<sup>-1</sup> mod m và tính lũy thừa lớn a<sup>b</sup> mod m.</p>
+            </div>
+          </div>
+          <div style="display:flex;gap:0.65rem;flex-wrap:wrap;margin-bottom:0.85rem;">
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>Số nguyên a</label>
+              <input type="number" id="mod-a-input" class="form-control mono" value="-23" />
+            </div>
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>Modulo m (&gt; 0)</label>
+              <input type="number" id="mod-m-input" class="form-control mono" value="5" min="1" />
+            </div>
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>Số mũ b (tính a^b mod m)</label>
+              <input type="number" id="mod-exp-input" class="form-control mono" value="202" min="0" />
+            </div>
+          </div>
+          <button class="btn" id="calc-mod-btn" style="width:100%;justify-content:center;margin-bottom:0.85rem;">⚡ Tính Phép chia, GCD, Nghịch đảo &amp; Lũy thừa</button>
+          <div id="mod-calc-output"></div>
+        </div>
+
+        <!-- Tool 2: RSA Calculator -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">🔐 2. Máy tính Hệ mật Mã hóa RSA (Tìm n, φ(n), Khóa giải mã d &amp; Bản mã C)</h3>
+              <p style="font-size:0.88rem;color:var(--text-secondary);">Nhập 2 số nguyên tố p, q và số mũ công khai e để giải ngay bài toán RSA trong đề FE.</p>
+            </div>
+          </div>
+          <div style="display:flex;gap:0.65rem;flex-wrap:wrap;margin-bottom:0.85rem;">
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>Số nguyên tố p</label>
+              <input type="number" id="rsa-p" class="form-control mono" value="5" />
+            </div>
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>Số nguyên tố q</label>
+              <input type="number" id="rsa-q" class="form-control mono" value="11" />
+            </div>
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>Khóa công khai e</label>
+              <input type="number" id="rsa-e" class="form-control mono" value="3" />
+            </div>
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>Bản rõ M</label>
+              <input type="number" id="rsa-m" class="form-control mono" value="9" />
+            </div>
+          </div>
+          <button class="btn" id="calc-rsa-btn" style="width:100%;justify-content:center;margin-bottom:0.85rem;">🔑 Giải bài toán RSA</button>
+          <div id="rsa-output"></div>
+        </div>
+
+        <!-- Tool 3: Combinatorics, Pigeonhole & Word Permutations -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">🎲 3. Máy tính Tổ hợp C(n,r), Chia kẹo Euler, Chuồng bồ câu &amp; Đếm Chuỗi</h3>
+              <p style="font-size:0.88rem;color:var(--text-secondary);">Tính nhanh C(n,r), P(n,r), C(n+r-1,r) và số hoán vị của một từ bất kỳ (VD: SUCCESS, MISSISSIPPI).</p>
+            </div>
+          </div>
+          <div style="display:flex;gap:0.65rem;flex-wrap:wrap;margin-bottom:0.85rem;">
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>n (Số loại / Số chuồng k)</label>
+              <input type="number" id="comb-n" class="form-control mono" value="5" min="1" max="100" />
+            </div>
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>r (Số vật chọn / Mục tiêu r)</label>
+              <input type="number" id="comb-r" class="form-control mono" value="6" min="0" max="100" />
+            </div>
+            <div class="input-group" style="flex:1.4;margin-bottom:0;">
+              <label>Từ cần đếm hoán vị lặp</label>
+              <input type="text" id="comb-word" class="form-control mono" value="SUCCESS" />
+            </div>
+          </div>
+          <button class="btn" id="calc-comb-btn" style="width:100%;justify-content:center;margin-bottom:0.85rem;">🧮 Tính Tổ hợp, Chuồng bồ câu &amp; Chuỗi</button>
+          <div id="comb-output"></div>
+        </div>
+
+        <!-- Tool 4: Full m-ary Tree & Prefix/Postfix Evaluator -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">🌳 4. Máy tính Cây m-phân Đầy đủ &amp; Biểu thức Tiền tố (Prefix) / Hậu tố (Postfix)</h3>
+              <p style="font-size:0.88rem;color:var(--text-secondary);">Tính tổng số đỉnh n, số lá l của cây m-phân và tính giá trị biểu thức Ba Lan (cách nhau bởi dấu cách).</p>
+            </div>
+          </div>
+          <div style="display:flex;gap:0.65rem;flex-wrap:wrap;margin-bottom:0.85rem;">
+            <div class="input-group" style="width:120px;margin-bottom:0;">
+              <label>Bậc cây m</label>
+              <input type="number" id="tree-m" class="form-control mono" value="3" min="2" />
+            </div>
+            <div class="input-group" style="width:150px;margin-bottom:0;">
+              <label>Số đỉnh trong (i)</label>
+              <input type="number" id="tree-i" class="form-control mono" value="12" min="1" />
+            </div>
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>Biểu thức Prefix hoặc Postfix (cách nhau dấu cách)</label>
+              <input type="text" id="tree-expr" class="form-control mono" value="+ - * 2 3 5 / ^ 2 3 4" />
+            </div>
+          </div>
+          <button class="btn" id="calc-tree-btn" style="width:100%;justify-content:center;margin-bottom:0.85rem;">🌲 Tính Cây m-phân &amp; Giá trị Biểu thức</button>
+          <div id="tree-output"></div>
+        </div>
+
+        <!-- Tool 5: Recurrence Relation & Master Theorem Solver -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">📈 5. Giải Hệ Thức Truy Hồi Bậc 2 (a_n = c₁·a_(n-1) + c₂·a_(n-2)) &amp; Định Lý Master</h3>
+              <p style="font-size:0.88rem;color:var(--text-secondary);">Tìm phương trình đặc trưng, công thức tổng quát (kèm α, β) và độ phức tạp T(n) = a·T(n/b) + c·n^d.</p>
+            </div>
+          </div>
+          <div style="display:flex;gap:0.55rem;flex-wrap:wrap;margin-bottom:0.65rem;">
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>Hệ số c₁</label>
+              <input type="number" id="rec-c1" class="form-control mono" value="5" />
+            </div>
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>Hệ số c₂</label>
+              <input type="number" id="rec-c2" class="form-control mono" value="-6" />
+            </div>
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>Giá trị đầu a₀</label>
+              <input type="number" id="rec-a0" class="form-control mono" value="2" />
+            </div>
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>Giá trị đầu a₁</label>
+              <input type="number" id="rec-a1" class="form-control mono" value="5" />
+            </div>
+          </div>
+          <div style="display:flex;gap:0.55rem;flex-wrap:wrap;margin-bottom:0.85rem;">
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>Master: a (số bài toán con)</label>
+              <input type="number" id="mst-a" class="form-control mono" value="4" min="1" />
+            </div>
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>Master: b (hệ số chia n/b)</label>
+              <input type="number" id="mst-b" class="form-control mono" value="2" min="2" />
+            </div>
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>Master: d (số mũ của n^d)</label>
+              <input type="number" id="mst-d" class="form-control mono" value="1" min="0" />
+            </div>
+          </div>
+          <button class="btn" id="calc-rec-btn" style="width:100%;justify-content:center;margin-bottom:0.85rem;">⚡ Giải Hệ thức truy hồi &amp; Định lý Master</button>
+          <div id="rec-output"></div>
+        </div>
+
+        <!-- Tool 6: Graph Theory & Planar Graph Calculator -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">🕸️ 6. Máy tính Đồ Thị Đặc Biệt (K_n, C_n, W_n, Q_n, K_m,n) &amp; Đồ Thị Phẳng Euler</h3>
+              <p style="font-size:0.88rem;color:var(--text-secondary);">Nhập n và m để xem ngay số đỉnh, số cạnh, sắc số χ(G), điều kiện Euler và số miền r = e - v + 2.</p>
+            </div>
+          </div>
+          <div style="display:flex;gap:0.55rem;flex-wrap:wrap;margin-bottom:0.85rem;">
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>Chỉ số n (của K_n, C_n, W_n, Q_n)</label>
+              <input type="number" id="gr-n" class="form-control mono" value="4" min="1" max="20" />
+            </div>
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>Chỉ số m (của K_m,n)</label>
+              <input type="number" id="gr-m" class="form-control mono" value="3" min="1" max="20" />
+            </div>
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>Đồ thị phẳng: Số đỉnh v</label>
+              <input type="number" id="gr-v" class="form-control mono" value="12" min="1" />
+            </div>
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>Bậc mỗi đỉnh deg(v)</label>
+              <input type="number" id="gr-deg" class="form-control mono" value="3" min="1" />
+            </div>
+          </div>
+          <button class="btn" id="calc-gr-btn" style="width:100%;justify-content:center;margin-bottom:0.85rem;">🕸️ Tính Thông số Đồ thị &amp; Số miền Phẳng</button>
+          <div id="gr-output"></div>
+        </div>
+
+        <!-- Tool 7: Bitwise Operations & Base Converter -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">💻 7. Máy tính Phép Toán Bitwise (OR, AND, XOR) &amp; Đổi Hệ Cơ Số (2, 8, 10, 16)</h3>
+              <p style="font-size:0.88rem;color:var(--text-secondary);">Tính nhanh kết quả Bitwise của 2 chuỗi bit và chuyển đổi số nguyên giữa hệ 10, Nhị phân, Bát phân, Hex.</p>
+            </div>
+          </div>
+          <div style="display:flex;gap:0.55rem;flex-wrap:wrap;margin-bottom:0.85rem;">
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>Chuỗi bit A</label>
+              <input type="text" id="bit-a" class="form-control mono" value="1011 0010" />
+            </div>
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>Chuỗi bit B</label>
+              <input type="text" id="bit-b" class="form-control mono" value="0110 1010" />
+            </div>
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>Số hệ 10 cần đổi cơ số</label>
+              <input type="number" id="base-dec" class="form-control mono" value="219" min="0" />
+            </div>
+          </div>
+          <button class="btn" id="calc-bit-btn" style="width:100%;justify-content:center;margin-bottom:0.85rem;">⚡ Tính Bitwise &amp; Đổi Cơ Số</button>
+          <div id="bit-output"></div>
+        </div>
+
+        <!-- Tool 8: Function & Relation Counter -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">📐 8. Máy tính Đếm Số Hàm (Đơn ánh, Toàn ánh, Song ánh) &amp; Số Quan Hệ Trên Tập Hợp</h3>
+              <p style="font-size:0.88rem;color:var(--text-secondary);">Nhập số phần tử |A| = m và |B| = n để tính ngay mọi câu hỏi đếm hàm số và quan hệ 2 ngôi.</p>
+            </div>
+          </div>
+          <div style="display:flex;gap:0.65rem;flex-wrap:wrap;margin-bottom:0.85rem;">
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>Số phần tử tập nguồn |A| = m</label>
+              <input type="number" id="fn-m" class="form-control mono" value="4" min="1" max="20" />
+            </div>
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>Số phần tử tập đích |B| = n</label>
+              <input type="number" id="fn-n" class="form-control mono" value="6" min="1" max="20" />
+            </div>
+          </div>
+          <button class="btn" id="calc-fn-btn" style="width:100%;justify-content:center;margin-bottom:0.85rem;">📊 Tính Số Tập con, Số Hàm &amp; Số Quan hệ</button>
+          <div id="fn-output"></div>
+        </div>
+
+        <!-- Tool 9: Pseudorandom Numbers & Alphabet Affine Cipher (From Teacher Phu's PDF) -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">🔤 9. Máy tính Số Giả Ngẫu Nhiên &amp; Mã Hóa Chữ Cái f(x) = (ax + b) mod 26 (Mục 4.15 &amp; 4.16)</h3>
+              <p style="font-size:0.88rem;color:var(--text-secondary);">Tính nhanh dãy x_(n+1) = (a·x_n + c) mod m và mã hóa từ tiếng Anh bất kỳ (VD: STOP &rarr; MPAD).</p>
+            </div>
+          </div>
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.65rem;">
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>PRNG: Hệ số a</label>
+              <input type="number" id="prng-a" class="form-control mono" value="5" />
+            </div>
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>PRNG: Số cộng c</label>
+              <input type="number" id="prng-c" class="form-control mono" value="3" />
+            </div>
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>PRNG: Modulo m</label>
+              <input type="number" id="prng-m" class="form-control mono" value="16" min="2" />
+            </div>
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>Hạt giống x₀</label>
+              <input type="number" id="prng-x0" class="form-control mono" value="7" />
+            </div>
+          </div>
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.85rem;">
+            <div class="input-group" style="flex:1.4;margin-bottom:0;">
+              <label>Từ cần Mã hóa (A=0..Z=25)</label>
+              <input type="text" id="cip-word" class="form-control mono" value="STOP" />
+            </div>
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>Hàm f(x): Hệ số a</label>
+              <input type="number" id="cip-a" class="form-control mono" value="3" />
+            </div>
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>Hàm f(x): Số cộng b</label>
+              <input type="number" id="cip-b" class="form-control mono" value="10" />
+            </div>
+          </div>
+          <button class="btn" id="calc-prng-btn" style="width:100%;justify-content:center;margin-bottom:0.85rem;">🔐 Tính Dãy Giả Ngẫu Nhiên &amp; Mã Hóa Chữ Cái</button>
+          <div id="prng-output"></div>
+        </div>
+
+        <!-- Tool 10: Greedy Change-Making, Exact Master C1/C2 & Sort Step Tracer (From Teacher Phu's PDF) -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">🪙 10. Đổi Tiền Tham Lam (Greedy), Master Chính Xác (C₁, C₂) &amp; Chạy Từng Bước Sort (Mục 3 &amp; 6.5)</h3>
+              <p style="font-size:0.88rem;color:var(--text-secondary);">Tính số xu tối thiểu, tìm C₁, C₂ của f(n) = a·f(n/b) + c và xem từng vòng lặp Bubble / Insertion Sort.</p>
+            </div>
+          </div>
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.65rem;">
+            <div class="input-group" style="flex:1.3;margin-bottom:0;">
+              <label>Các mệnh giá xu (cách dấu phẩy)</label>
+              <input type="text" id="grd-coins" class="form-control mono" value="10, 5, 2, 1" />
+            </div>
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>Số tiền cần đổi n</label>
+              <input type="number" id="grd-amount" class="form-control mono" value="23" min="1" />
+            </div>
+            <div class="input-group" style="flex:1.5;margin-bottom:0;">
+              <label>Mảng cần chạy Sort (cách dấu phẩy)</label>
+              <input type="text" id="srt-arr" class="form-control mono" value="5, 3, 4, 1, 2" />
+            </div>
+          </div>
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.85rem;">
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>f(n)=a·f(n/b)+c: a</label>
+              <input type="number" id="emst-a" class="form-control mono" value="3" min="2" />
+            </div>
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>Hệ số chia b</label>
+              <input type="number" id="emst-b" class="form-control mono" value="2" min="2" />
+            </div>
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>Hằng số c</label>
+              <input type="number" id="emst-c" class="form-control mono" value="4" />
+            </div>
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>Giá trị f(1)</label>
+              <input type="number" id="emst-f1" class="form-control mono" value="2" />
+            </div>
+          </div>
+          <button class="btn" id="calc-grd-btn" style="width:100%;justify-content:center;margin-bottom:0.85rem;">🚀 Giải Đổi tiền Greedy, Master (C₁, C₂) &amp; Chạy Sort</button>
+          <div id="grd-output"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 5: FLASHCARDS ==================== -->
+    <section class="tab-panel" id="tab-flashcards">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">🃏 Flashcards Toàn Bộ Câu Hỏi FE MAD101 &amp; Công Thức Trọng Tâm</h2>
+            <p style="font-size:0.92rem;color:var(--text-secondary);margin-top:0.2rem;">
+              Click vào thẻ (hoặc nhấn phím <code>Space</code>) để lật xem đáp án &amp; lời giải từng bước • Dùng phím <code>&larr;</code> <code>&rarr;</code> để chuyển câu.
+            </p>
+          </div>
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+            <button class="btn btn-sm" id="fc-mode-single-btn">🃏 Lật từng thẻ 3D</button>
+            <button class="btn btn-secondary btn-sm" id="fc-mode-grid-btn">📋 Xem danh sách toàn bộ thẻ</button>
+            <button class="btn btn-secondary btn-sm" id="fc-reveal-all-btn" style="display:none;">👁️ Hiện tất cả đáp án</button>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-bottom:1.1rem;align-items:center;">
+          <input
+            type="text"
+            id="fc-search-input"
+            class="form-control"
+            placeholder="🔎 Tìm câu hỏi hoặc công thức trong Flashcard (VD: 'Euler', 'Pigeonhole', 'RSA', 'tree', 'contrapositive')..."
+            style="flex:1;min-width:260px;"
+          />
+          <select id="fc-category-select" class="form-control" style="width:auto;min-width:230px;"></select>
+          <select id="fc-status-select" class="form-control" style="width:auto;">
+            <option value="ALL">Tất cả trạng thái</option>
+            <option value="UNMASTERED">Chưa thuộc (Cần ôn)</option>
+            <option value="MASTERED">Đã thuộc ✓</option>
+          </select>
+          <button class="btn btn-secondary" id="fc-shuffle-btn">🔀 Trộn thẻ</button>
+        </div>
+
+        <div id="fc-single-view">
+          <div class="flashcard-stage">
+            <div class="flashcard" id="flashcard-el">
+              <div class="flashcard-face front">
+                <div>
+                  <span class="badge" id="fc-front-cat">MAD101</span>
+                  <div class="fc-term" id="fc-front-term">Đang tải...</div>
+                  <div class="fc-options-preview" id="fc-front-options"></div>
+                </div>
+                <div style="font-size:0.86rem;color:var(--text-muted);text-align:center;padding-top:0.65rem;border-top:1px dashed var(--border);">
+                  👆 Nhấn vào thẻ hoặc bấm phím <strong>Space</strong> để lật xem Đáp án đúng &amp; Lời giải
+                </div>
+              </div>
+              <div class="flashcard-face back">
+                <div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.85rem;">
+                    <span class="badge badge-success">✅ Đáp án đúng &amp; Lời giải chi tiết</span>
+                    <span style="font-size:0.85rem;color:var(--text-muted);">Nhấn để lật lại câu hỏi</span>
+                  </div>
+                  <div id="fc-back-correct-box" class="fc-correct-box"></div>
+                  <div class="fc-answer" id="fc-back-ans" style="white-space:pre-line;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:center;justify-content:center;gap:0.85rem;flex-wrap:wrap;margin-top:1.1rem;">
+            <button class="btn btn-secondary" id="fc-prev-btn">&larr; Câu trước</button>
+            <span id="fc-counter" style="font-weight:800;min-width:120px;text-align:center;font-size:1.05rem;">1 / 52</span>
+            <button class="btn" id="fc-next-btn">Câu tiếp &rarr;</button>
+            <button class="btn btn-secondary" id="fc-master-btn">⭐ Đánh dấu Đã thuộc</button>
+          </div>
+        </div>
+
+        <div id="fc-grid-view" style="display:none;">
+          <div id="fc-grid-container" class="fc-grid-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 6: QUIZ & MOCK EXAM (EOS SIMULATOR) ==================== -->
+    <section class="tab-panel" id="tab-quiz">
+      <!-- Real Past Exam Launcher Cards -->
+      <div class="card" style="margin-bottom:1.25rem;border:1px solid var(--accent);">
+        <div class="card-header" style="margin-bottom:0.85rem;">
+          <div>
+            <h2 class="card-title">🏛️ Phòng Thi Thử FE MAD101 Như Thật (Chuẩn EOS FPT University — 60 Phút / Thang Điểm 10.0)</h2>
+            <p style="font-size:0.93rem;color:var(--text-secondary);margin-top:0.25rem;">
+              Chọn 1 trong 3 đề thi thật các kỳ trước (nguyên bản 50 câu kèm hình vẽ đồ thị/cây/giả mã) hoặc đề ngẫu nhiên 50 câu. Bạn có thể chọn <strong>⏱️ Thi Như Thật (60 phút, nộp bài chấm điểm &amp; xem toàn bộ lời giải)</strong> hoặc <strong>💡 Luyện từng câu (hiện lời giải ngay)</strong>:
+            </p>
+          </div>
+          <span class="badge badge-warning">Chuẩn EOS 60 Phút</span>
+        </div>
+
+        <div class="grid-4" style="margin-bottom:0;">
+          <div class="theory-box" style="display:flex;flex-direction:column;justify-content:space-between;gap:0.65rem;border:1px solid var(--border);">
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.35rem;">
+                <span class="badge badge-warning">Đề Thi Thật #1</span>
+                <span class="mono" style="font-size:0.82rem;color:var(--text-secondary);">50 câu • 60p</span>
+              </div>
+              <h4 style="font-size:1.05rem;margin-bottom:0.25rem;">🏆 Đề FE SU26 — Mã 815892</h4>
+              <p style="font-size:0.86rem;color:var(--text-secondary);margin:0;">Đề chuẩn 50 câu sắp xếp từ Chương 1 đến Chương 8 (Đồ thị, Cây, Huffman, MST, Merge).</p>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:0.4rem;">
+              <button class="btn btn-sm" style="width:100%;justify-content:center;" onclick="launchRealExam('Đề FE SU26_815892 (50 câu)', 'exam', 60)">⏱️ Thi Như Thật (60 Phút)</button>
+              <button class="btn btn-secondary btn-sm" style="width:100%;justify-content:center;" onclick="launchRealExam('Đề FE SU26_815892 (50 câu)', 'practice', 60)">💡 Luyện &amp; Xem giải ngay</button>
+            </div>
+          </div>
+
+          <div class="theory-box" style="display:flex;flex-direction:column;justify-content:space-between;gap:0.65rem;border:1px solid var(--border);">
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.35rem;">
+                <span class="badge badge-warning">Đề Thi Thật #2</span>
+                <span class="mono" style="font-size:0.82rem;color:var(--text-secondary);">50 câu • 60p</span>
+              </div>
+              <h4 style="font-size:1.05rem;margin-bottom:0.25rem;">🏆 Đề FE SU26 B5 — Mã 334451</h4>
+              <p style="font-size:0.86rem;color:var(--text-secondary);margin:0;">Đề thật 50 câu trộn thứ tự ngẫu nhiên chuẩn EOS (Kruskal, Binary Search, Incidence Matrix).</p>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:0.4rem;">
+              <button class="btn btn-sm" style="width:100%;justify-content:center;" onclick="launchRealExam('Đề FE SU26_B5_334451 (50 câu)', 'exam', 60)">⏱️ Thi Như Thật (60 Phút)</button>
+              <button class="btn btn-secondary btn-sm" style="width:100%;justify-content:center;" onclick="launchRealExam('Đề FE SU26_B5_334451 (50 câu)', 'practice', 60)">💡 Luyện &amp; Xem giải ngay</button>
+            </div>
+          </div>
+
+          <div class="theory-box" style="display:flex;flex-direction:column;justify-content:space-between;gap:0.65rem;border:1px solid var(--border);">
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.35rem;">
+                <span class="badge badge-warning">Đề Thi Thật #3</span>
+                <span class="mono" style="font-size:0.82rem;color:var(--text-secondary);">49 câu • 60p</span>
+              </div>
+              <h4 style="font-size:1.05rem;margin-bottom:0.25rem;">🏆 Đề FE SP26 — Kỳ Spring</h4>
+              <p style="font-size:0.86rem;color:var(--text-secondary);margin:0;">Đề thật 49 câu kỳ SP26 (Inorder, Prim, BFS, Dijkstra, Postfix, Master Theorem).</p>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:0.4rem;">
+              <button class="btn btn-sm" style="width:100%;justify-content:center;" onclick="launchRealExam('Đề FE SP26 (49 câu)', 'exam', 60)">⏱️ Thi Như Thật (60 Phút)</button>
+              <button class="btn btn-secondary btn-sm" style="width:100%;justify-content:center;" onclick="launchRealExam('Đề FE SP26 (49 câu)', 'practice', 60)">💡 Luyện &amp; Xem giải ngay</button>
+            </div>
+          </div>
+
+          <div class="theory-box" style="display:flex;flex-direction:column;justify-content:space-between;gap:0.65rem;border:1px solid var(--border);">
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.35rem;">
+                <span class="badge badge-success">Đề Tổ Hợp Chuẩn</span>
+                <span class="mono" style="font-size:0.82rem;color:var(--text-secondary);">50 câu • 60p</span>
+              </div>
+              <h4 style="font-size:1.05rem;margin-bottom:0.25rem;">🎲 Đề Thi Thử Ngẫu Nhiên 50 Câu</h4>
+              <p style="font-size:0.86rem;color:var(--text-secondary);margin:0;">Bốc ngẫu nhiên 50 câu từ ngân hàng 239 câu FE chuẩn tỷ lệ 8 chương, bấm giờ 60 phút.</p>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:0.4rem;">
+              <button class="btn btn-success btn-sm" style="width:100%;justify-content:center;" onclick="launchRealExam('ALL', 'exam', 60, 50)">⏱️ Thi Đề Ngẫu Nhiên 50 Câu</button>
+              <button class="btn btn-secondary btn-sm" style="width:100%;justify-content:center;" onclick="launchRealExam('WRONG', 'practice', 60)">🔥 Ôn riêng các câu làm sai</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Custom Filter & Timer Control Bar -->
+      <div class="card" style="margin-bottom:1.25rem;">
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:0.85rem;">
+          <div style="display:flex;gap:0.75rem;flex-wrap:wrap;flex:1;">
+            <div class="input-group" style="margin-bottom:0;min-width:230px;flex:1;">
+              <label>Bộ đề / Chủ đề câu hỏi đang chọn</label>
+              <select id="quiz-topic-select" class="form-control"></select>
+            </div>
+            <div class="input-group" style="margin-bottom:0;width:250px;">
+              <label>Chế độ làm bài</label>
+              <select id="quiz-mode-select" class="form-control">
+                <option value="exam">⏱️ Thi Như Thật (Bấm giờ 60p &amp; Chấm điểm)</option>
+                <option value="practice">💡 Luyện tập (Hiện đáp án &amp; lời giải ngay)</option>
+              </select>
+            </div>
+            <div class="input-group" style="margin-bottom:0;width:155px;">
+              <label>Số lượng câu</label>
+              <select id="quiz-count-select" class="form-control">
+                <option value="15">15 câu</option>
+                <option value="30">30 câu</option>
+                <option value="50">50 câu (Chuẩn FE)</option>
+                <option value="999" selected>Tất cả câu của đề</option>
+              </select>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;">
+            <span class="badge badge-warning mono" id="quiz-timer-box" style="display:none;font-size:1.05rem;padding:0.5rem 0.95rem;font-weight:800;">⏱️ 60:00</span>
+            <button class="btn" id="quiz-start-btn">🚀 Bắt đầu / Làm mới đề</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Exam Result Score Banner & Full Solutions Review Modal/Section -->
+      <div id="quiz-result-banner" style="display:none;"></div>
+
+      <div class="quiz-layout" id="quiz-active-workspace">
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.85rem;">
+            <div id="quiz-q-meta" style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;"></div>
+            <div style="display:flex;align-items:center;gap:0.5rem;">
+              <button class="btn btn-secondary btn-sm" id="quiz-toggle-img-btn" style="display:none;">🖼️ Xem hình gốc câu hỏi</button>
+              <button class="btn btn-secondary btn-sm" id="quiz-flag-btn">🏳️ Gắn cờ xem lại</button>
+            </div>
+          </div>
+
+          <div id="quiz-q-text" class="quiz-question-text" style="white-space:pre-line;"></div>
+
+          <!-- Question Diagram / Image Container -->
+          <div id="quiz-q-image-box" style="display:none;margin:0.85rem 0 1.1rem 0;text-align:center;background:#ffffff;padding:0.75rem;border-radius:10px;border:1px solid var(--border);">
+            <img id="quiz-q-image" src="" alt="Hình minh họa câu hỏi FE MAD101" style="max-width:100%;max-height:420px;border-radius:6px;object-fit:contain;" />
+          </div>
+
+          <div id="quiz-options-list"></div>
+          <div id="quiz-explanation-box" class="explanation-box" style="display:none;"></div>
+
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.6rem;margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--border);">
+            <button class="btn btn-secondary" id="quiz-prev-btn">&larr; Câu trước</button>
+            <div style="display:flex;gap:0.55rem;flex-wrap:wrap;">
+              <button class="btn btn-secondary" id="quiz-peek-ans-btn" title="Xem ngay đáp án và lời giải của câu hiện tại">👁️ Xem lời giải câu này</button>
+              <button class="btn btn-success" id="quiz-submit-btn">🏁 Nộp bài &amp; Chấm điểm</button>
+            </div>
+            <button class="btn" id="quiz-next-btn">Câu tiếp &rarr;</button>
+          </div>
+        </div>
+
+        <div class="card" style="height:fit-content;">
+          <div class="card-header" style="margin-bottom:0.65rem;">
+            <div>
+              <h3 class="card-title" style="font-size:0.98rem;">🗺️ Bảng Câu Hỏi (EOS Palette)</h3>
+              <div id="quiz-progress-summary" style="font-size:0.83rem;color:var(--text-secondary);margin-top:0.15rem;">Đã chọn: 0 / 50 câu</div>
+            </div>
+          </div>
+          <div class="q-palette" id="quiz-palette-grid" style="margin-bottom:0.85rem;"></div>
+          <div style="font-size:0.8rem;color:var(--text-secondary);display:flex;flex-direction:column;gap:0.3rem;border-top:1px solid var(--border);padding-top:0.65rem;">
+            <div>🟢 <strong>Xanh lá:</strong> Câu trả lời Đúng • 🔴 <strong>Đỏ:</strong> Câu trả lời Sai</div>
+            <div>🔵 <strong>Viền xanh:</strong> Đã chọn đáp án • 🟠 <strong>Vàng:</strong> Đã gắn cờ xem lại</div>
+            <div>💡 <em>Mẹo:</em> Dùng phím mũi tên <code>&larr;</code> <code>&rarr;</code> hoặc phím số <code>1..5</code> để chọn nhanh đáp án A..E!</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Full All-Questions Solution Sheet (Shown when clicking 'Xem toàn bộ 50 câu & lời giải') -->
+      <div id="quiz-full-review-sheet" style="display:none;margin-top:1.25rem;"></div>
+    </section>
+  </main>
+
+  <div class="toast" id="app-toast">Đã lưu!</div>
+
+  <footer class="footer">
+    MAD101 Study Hub • Thiết kế chuyên biệt cho sinh viên FPT University ôn tập môn Discrete Mathematics (Toán rời rạc).
+  </footer>
+
+  <script src="js/mad101-data.js"></script>
+  <script src="js/mad101-lessons.js"></script>
+  <script src="js/mad101-app.js"></script>
+</body>
+</html>
