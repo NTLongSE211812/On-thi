@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OSG202 Study Hub — Operating Systems (FPT University)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-inner">
+      <a href="#" class="brand" onclick="switchTab('dashboard'); return false;">
+        <div class="brand-logo" style="background:linear-gradient(135deg,#0ea5e9,#10b981);">OSG</div>
+        <div>
+          <span class="brand-title">OSG202 Study Hub</span>
+          <span class="brand-subtitle">Operating Systems • Hệ Điều Hành FPT University (Tanenbaum 4th Ed. &amp; Ôn FE)</span>
+        </div>
+      </a>
+
+      <nav class="nav-tabs" aria-label="Điều hướng chính">
+        <button class="nav-tab active" data-tab="dashboard">📊 Tổng quan</button>
+        <button class="nav-tab" data-tab="cheatsheet">🎯 Công thức &amp; Linux</button>
+        <button class="nav-tab" data-tab="theory">🎓 Bài Giảng Dễ Hiểu</button>
+        <button class="nav-tab" data-tab="tools">🧮 Máy tính OSG202</button>
+        <button class="nav-tab" data-tab="flashcards">🃏 Flashcards</button>
+        <button class="nav-tab" data-tab="quiz">📝 Phòng Thi Thử FE (60p)</button>
+      </nav>
+
+      <div class="header-actions">
+        <a href="index.html" class="icon-btn" style="text-decoration:none;" title="Sang môn NWC204 (Computer Networking)">🌐 NWC204</a>
+        <a href="mad101.html" class="icon-btn" style="text-decoration:none;" title="Sang môn MAD101 (Discrete Mathematics)">📐 MAD101</a>
+        <div class="font-size-group" title="Điều chỉnh kích thước chữ trên toàn trang">
+          <button class="font-btn" data-scale="0.95" onclick="setFontScale(0.95)">A-</button>
+          <button class="font-btn active" data-scale="1.05" onclick="setFontScale(1.05)">A</button>
+          <button class="font-btn" data-scale="1.18" onclick="setFontScale(1.18)">A+</button>
+        </div>
+        <button class="icon-btn" id="theme-toggle-btn" title="Đổi giao diện Sáng / Tối">☀️ Light</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-container">
+    <!-- ==================== TAB 1: DASHBOARD ==================== -->
+    <section class="tab-panel active" id="tab-dashboard">
+      <!-- Quick Global Search -->
+      <div class="card" style="margin-bottom:1.5rem;">
+        <div class="card-header" style="margin-bottom:0.65rem;">
+          <div class="card-title">🔍 Tra cứu nhanh toàn bộ kiến thức &amp; Câu hỏi FE OSG202</div>
+          <span class="badge">Processes • Scheduling • Paging/TLB • I-node • RAID • Banker/Deadlocks</span>
+        </div>
+        <input
+          type="text"
+          id="global-search-input"
+          class="form-control"
+          placeholder="Nhập từ khóa bất kỳ: ví dụ 'fork', 'Round Robin', 'TLB', 'Belady', 'NRU', 'I-node', 'DMA', 'RAID 5', 'Coffman', 'Banker'..."
+        />
+        <div
+          id="global-search-results"
+          style="display:none;margin-top:0.75rem;background:var(--bg-input);border:1px solid var(--border);border-radius:8px;max-height:360px;overflow-y:auto;"
+        ></div>
+      </div>
+
+      <!-- Progress Stats -->
+      <div class="grid-4">
+        <div class="card stat-card">
+          <span class="stat-label">📚 Chương lý thuyết đã học</span>
+          <div class="stat-value" id="stat-chapters-val">0/6</div>
+          <div class="stat-sub" id="stat-chapters-sub">Hoàn thành 0% chương trình</div>
+          <div class="progress-bar"><div class="progress-fill" id="stat-chapters-bar" style="width:0%"></div></div>
+        </div>
+
+        <div class="card stat-card">
+          <span class="stat-label">🃏 Flashcards đã thuộc</span>
+          <div class="stat-value" id="stat-fc-val">0/82</div>
+          <div class="stat-sub" id="stat-fc-sub">Đã thuộc 0% thẻ &amp; câu hỏi</div>
+          <div class="progress-bar"><div class="progress-fill" id="stat-fc-bar" style="width:0%"></div></div>
+        </div>
+
+        <div class="card stat-card">
+          <span class="stat-label">🏆 Điểm Thi thử FE cao nhất</span>
+          <div class="stat-value" id="stat-quiz-val">0%</div>
+          <div class="stat-sub" id="stat-quiz-sub">0 lần làm bài</div>
+          <div class="progress-bar"><div class="progress-fill" id="stat-quiz-bar" style="width:0%"></div></div>
+        </div>
+
+        <div class="card stat-card">
+          <span class="stat-label">🔥 Câu hỏi cần ôn lại (Làm sai)</span>
+          <div class="stat-value" id="stat-wrong-val" style="color:var(--warning);">0</div>
+          <div class="stat-sub">Tự động lưu khi làm trắc nghiệm</div>
+          <div style="margin-top:0.5rem;">
+            <button class="btn btn-secondary btn-sm" onclick="launchOsgExam('WRONG', 'practice', 30)">Ôn ngay &rarr;</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- FE Breakdown -->
+      <div class="card" id="fe-analysis-container" style="margin-bottom:1.5rem;"></div>
+
+      <!-- Quick Reference Summary Tables -->
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">💿 Bảng So Sánh Các Mức RAID (Hay Hỏi Trong FE)</h2>
+            <span class="badge badge-warning">Chapter 5</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Mức RAID</th>
+                  <th>Cơ chế</th>
+                  <th>Số ổ tối thiểu</th>
+                  <th>Chịu lỗi</th>
+                  <th>Đặc điểm nổi bật</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>RAID 0</strong></td><td>Striping</td><td>2</td><td>0 ổ (Mất hết!)</td><td>Nhanh nhất, không dự phòng</td></tr>
+                <tr><td><strong>RAID 1</strong></td><td>Mirroring</td><td>2</td><td>1 ổ (50%)</td><td>Nhân đôi y hệt, tốn gấp đôi ổ</td></tr>
+                <tr><td><strong>RAID 4</strong></td><td>Dedicated Parity</td><td>3</td><td>1 ổ</td><td>Nghẽn cổ chai ở ổ parity cố định</td></tr>
+                <tr><td><strong>RAID 5</strong></td><td>Distributed Parity</td><td>3</td><td>1 ổ</td><td>Phân tán parity đều, phổ biến nhất</td></tr>
+                <tr><td><strong>RAID 6</strong></td><td>Dual Parity</td><td>4</td><td><strong>2 ổ đồng thời</strong></td><td>An toàn nhất, tốn 2 ổ cho parity</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">⚡ Bộ 5 Công Thức Vàng OSG202 (Gặp Là Bấm Ra Ngay)</h2>
+            <span class="badge badge-success">Ch.2, 3, 4, 6</span>
+          </div>
+          <div class="theory-box" style="margin-bottom:0.75rem;">
+            <ul>
+              <li><strong>Độ sử dụng CPU đa chương:</strong> <strong><code>CPU Util = 1 - p<sup>n</sup></code></strong> (<code>n</code> tiến trình, chờ I/O tỉ lệ <code>p</code>).</li>
+              <li><strong>Lập lịch CPU:</strong> <code>TAT = Finish - Arrival</code> &nbsp;|&nbsp; <code>WT = TAT - Burst</code>.</li>
+              <li><strong>Thời gian truy cập có TLB (EAT):</strong> <strong><code>&alpha;(t<sub>TLB</sub> + t<sub>MEM</sub>) + (1 - &alpha;)(t<sub>TLB</sub> + 2t<sub>MEM</sub>)</code></strong>.</li>
+              <li><strong>Số tài nguyên tối thiểu tránh Deadlock:</strong> <strong><code>R<sub>min</sub> = &sum;(Max<sub>i</sub> - 1) + 1</code></strong>.</li>
+              <li><strong>Cây I-node:</strong> <code>K = BlockSize / PtrSize</code> &rArr; <code>MaxBlocks = Direct + K + K<sup>2</sup> + K<sup>3</sup></code>.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 2: CHEAT SHEET & LINUX COMMANDS ==================== -->
+    <section class="tab-panel" id="tab-cheatsheet">
+      <div class="card" style="margin-bottom:1.5rem;">
+        <div class="card-header" style="margin-bottom:0.85rem;">
+          <div>
+            <h2 class="card-title">🎯 Sổ Tay Phản Xạ Nhanh FE OSG202 &amp; Lệnh Linux / Ubuntu Cơ Bản</h2>
+            <p style="font-size:0.95rem;color:var(--text-secondary);margin-top:0.25rem;">
+              Gõ từ khóa bất kỳ để tra cứu ngay công thức, quy tắc và lệnh Linux hay xuất hiện trong bài thi FE &amp; Lab OSG202.
+            </p>
+          </div>
+          <span class="badge badge-warning">Tanenbaum 4th Ed.</span>
+        </div>
+        <input
+          type="text"
+          id="cheatsheet-filter-input"
+          class="form-control"
+          placeholder="🔎 Gõ từ khóa để lọc (VD: 'fork', 'TLB', 'Belady', 'NRU', 'I-node', 'RAID', 'Coffman', 'Banker', 'chmod')..."
+        />
+      </div>
+
+      <div class="card" style="margin-bottom:1.5rem;">
+        <div class="card-header">
+          <h3 class="card-title">⚡ Bảng Phản Xạ: "Nhìn Câu Hỏi Đề FE OSG202 &rarr; Chọn Đáp Án Trong 10 Giây"</h3>
+          <span class="badge">Mẹo Giải Nhanh</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:18%;">Chương</th>
+                <th style="width:40%;">Khi đề bài hỏi...</th>
+                <th style="width:42%;">Đáp án trọng tâm &amp; Công thức ✅</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="cs-item">
+                <td><span class="badge">Ch.1: OS &amp; Syscall</span></td>
+                <td>Chuyển từ <strong>User Mode &rarr; Kernel Mode</strong>? Giá trị trả về của <code>fork()</code>?</td>
+                <td>• Chuyển chế độ qua lệnh <strong><code>TRAP (System Call)</code></strong>.<br/>• <code>fork()</code> trả về <strong><code>0</code> cho Con</strong>, <strong><code>PID con (&gt;0)</code> cho Cha</strong>, <code>-1</code> nếu lỗi.</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge">Ch.2: Process/Thread</span></td>
+                <td>Chuyển trạng thái nào <strong>KHÔNG tồn tại</strong>? Thread chia sẻ gì &amp; có riêng gì?</td>
+                <td>• KHÔNG có <strong><code>Blocked &rarr; Running</code></strong> và <strong><code>Ready &rarr; Blocked</code></strong>.<br/>• Thread chia sẻ: Code, Data, Heap, Files | Có riêng: <strong>Stack, Registers, PC</strong>.</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge badge-warning">Ch.2: Scheduling</span></td>
+                <td>Tính <strong>CPU Utilization</strong> với <code>n</code> tiến trình chờ I/O tỉ lệ <code>p</code> &amp; Real-time Schedulable?</td>
+                <td>• <strong><code>CPU Util = 1 - p<sup>n</sup></code></strong> (VD: 4 tiến trình, p=0.5 &rArr; 93.75%).<br/>• Real-time lập lịch được khi <strong><code>&sum; (C<sub>i</sub> / P<sub>i</sub>) &le; 1</code></strong>.</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge badge-warning">Ch.3: Paging &amp; TLB</span></td>
+                <td>Dịch địa chỉ ảo <code>V</code> sang vật lý? Tính <strong>Effective Access Time (EAT)</strong>?</td>
+                <td>• <code>Page = &lfloor;V / PageSize&rfloor;</code>, <code>Offset = V mod PageSize</code> &rArr; <strong><code>PAddr = Frame &times; PageSize + Offset</code></strong>.<br/>• <strong><code>EAT = &alpha;(t<sub>TLB</sub> + t<sub>MEM</sub>) + (1 - &alpha;)(t<sub>TLB</sub> + 2t<sub>MEM</sub>)</code></strong>.</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge badge-warning">Ch.3: Replacement</span></td>
+                <td>Thứ tự đuổi trang <strong>NRU</strong>? <strong>Belady's Anomaly</strong> xảy ra ở đâu?</td>
+                <td>• NRU đuổi lớp nhỏ nhất trước: <strong><code>Class 0 (R=0, M=0) &rarr; Class 1 (0,1) &rarr; Class 2 (1,0) &rarr; Class 3 (1,1)</code></strong>.<br/>• <strong>Belady's Anomaly</strong> (tăng frame tăng fault) xảy ra ở <strong><code>FIFO</code></strong>.</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge badge-success">Ch.4: File Systems</span></td>
+                <td>Phân biệt <strong>Hard Link</strong> vs <strong>Symbolic Link</strong>? Tính kích thước <strong>Bitmap</strong>?</td>
+                <td>• Hard Link: cùng i-node, cùng partition, xóa gốc vẫn đọc được.<br/>• Symbolic Link: chứa đường dẫn, xuyên partition, xóa gốc bị hỏng link.<br/>• <strong><code>Bitmap (bytes) = (DiskSize / BlockSize) / 8</code></strong>.</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge badge-success">Ch.5: I/O &amp; Disk</span></td>
+                <td>4 tầng phần mềm I/O (từ dưới lên)? Cơ chế truyền cả khối không qua CPU?</td>
+                <td>• 4 tầng: <strong><code>Interrupt Handlers &rarr; Device Drivers &rarr; Device-Independent &rarr; User-Space</code></strong>.<br/>• Truyền cả khối trực tiếp vào RAM: <strong><code>DMA (Direct Memory Access)</code></strong>.</td>
+              </tr>
+              <tr class="cs-item">
+                <td><span class="badge badge-success">Ch.6: Deadlocks</span></td>
+                <td>4 điều kiện <strong>Coffman</strong>? Số tài nguyên tối thiểu <code>R<sub>min</sub></code> để không bao giờ Deadlock?</td>
+                <td>• 4 ĐK: <strong>Mutual Exclusion, Hold &amp; Wait, No Preemption, Circular Wait</strong>.<br/>• Công thức tránh Deadlock: <strong><code>R<sub>min</sub> = &sum;(Max<sub>i</sub> - 1) + 1</code></strong>.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Linux Commands Quick Reference -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">🐧 Sổ Tay Các Lệnh Linux / Ubuntu Hay Gặp Trong OSG202</h3>
+          <span class="badge badge-success">POSIX / Shell</span>
+        </div>
+        <div class="grid-2">
+          <div class="theory-box cs-item">
+            <h4>📁 Quản Lý File, Thư Mục &amp; Phân Quyền</h4>
+            <ul class="mono" style="font-size:0.9rem;">
+              <li><code>ls -la</code> — Liệt kê tất cả file (gồm file ẩn) + quyền + kích thước</li>
+              <li><code>cd ..</code> / <code>pwd</code> — Về thư mục cha / In đường dẫn hiện tại</li>
+              <li><code>mkdir dir</code> / <code>rm -rf dir</code> — Tạo / Xóa thư mục đệ quy</li>
+              <li><code>cp a b</code> / <code>mv a b</code> — Sao chép / Di chuyển hoặc đổi tên</li>
+              <li><code>ln src dst</code> / <code>ln -s src dst</code> — Tạo Hard Link / Symbolic Link</li>
+              <li><code>chmod 755 file</code> — Đặt quyền rwxr-xr-x (r=4, w=2, x=1)</li>
+              <li><code>chown user:group file</code> — Đổi chủ sở hữu file</li>
+            </ul>
+          </div>
+          <div class="theory-box cs-item">
+            <h4>⚙️ Quản Lý Tiến Trình, Tìm Kiếm &amp; Hệ Thống</h4>
+            <ul class="mono" style="font-size:0.9rem;">
+              <li><code>ps -ef</code> / <code>top</code> — Xem danh sách tiến trình đang chạy &amp; PID</li>
+              <li><code>kill -9 PID</code> — Buộc kết thúc ngay lập tức tiến trình (SIGKILL)</li>
+              <li><code>grep "text" file</code> — Tìm dòng chứa chuỗi khớp trong file</li>
+              <li><code>cat file | wc -l</code> — Đếm số dòng bằng ống dẫn Pipe (<code>|</code>)</li>
+              <li><code>df -h</code> / <code>du -sh</code> — Xem dung lượng phân vùng / thư mục</li>
+              <li><code>fsck /dev/sda1</code> — Kiểm tra &amp; sửa lỗi nhất quán File System</li>
+              <li><code>man ls</code> — Mở trang hướng dẫn chi tiết (Manual) của lệnh</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 3: INTERACTIVE CLASSROOM & 6 CHAPTERS THEORY ==================== -->
+    <section class="tab-panel" id="tab-theory">
+      <div class="card" style="margin-bottom:1.25rem;border:1px solid var(--accent);">
+        <div class="card-header" style="margin-bottom:0;">
+          <div>
+            <h2 class="card-title">🎓 Lớp Học OSG202 — Giảng Dạy Lý Thuyết Dễ Hiểu Từ Mất Gốc</h2>
+            <p style="font-size:0.93rem;color:var(--text-secondary);margin-top:0.25rem;">
+              Mỗi bài giảng giải thích <strong>bản chất bằng ví dụ đời thường</strong>, chốt công thức cốt lõi, <strong>giải mẫu từng bước câu tính toán đề FE</strong>, cảnh báo bẫy và có <strong>Mini-Quiz kiểm tra hiểu bài ngay</strong>!
+            </p>
+          </div>
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+            <button class="btn btn-sm" id="theory-mode-classroom-btn" onclick="switchTheoryMode('classroom')">👨‍🏫 Lớp Học Giảng Dạy (6 Bài)</button>
+            <button class="btn btn-secondary btn-sm" id="theory-mode-summary-btn" onclick="switchTheoryMode('summary')">📚 Tóm Tắt Chi Tiết 6 Chương</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- View 1: Interactive Classroom (Default) -->
+      <div id="theory-classroom-view" style="display:grid;grid-template-columns:minmax(240px,310px) 1fr;gap:1.25rem;align-items:start;">
+        <div class="card" style="padding:1rem;">
+          <div style="font-weight:800;font-size:0.95rem;margin-bottom:0.75rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.04em;">
+            📖 Giáo Trình 6 Bài Giảng
+          </div>
+          <div id="lessons-sidebar" style="display:flex;flex-direction:column;gap:0.45rem;"></div>
+        </div>
+        <div id="lesson-stage"></div>
+      </div>
+
+      <!-- View 2: Full 6 Chapters Summary -->
+      <div id="theory-summary-view" style="display:none;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
+          <h2 style="font-size:1.25rem;font-weight:800;">📖 Nội Dung Chi Tiết 6 Chương OSG202 (Modern Operating Systems — Tanenbaum)</h2>
+          <span style="font-size:0.9rem;color:var(--text-secondary);">Tích vào ô vuông ở mỗi chương để đánh dấu hoàn thành</span>
+        </div>
+        <div class="chapter-list" id="chapters-container"></div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 4: 6 INTERACTIVE OSG202 SIMULATORS & CALCULATORS ==================== -->
+    <section class="tab-panel" id="tab-tools">
+      <div class="grid-2">
+        <!-- Tool 1: CPU Scheduling Simulator -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">⏱️ 1. Mô Phỏng Lập Lịch CPU (FCFS, SJF, SRTN &amp; Round Robin)</h3>
+              <p style="font-size:0.86rem;color:var(--text-secondary);">Nhập mỗi dòng: <code>Tên Arrival Burst</code> &rarr; Tự vẽ Sơ đồ Gantt &amp; tính Average TAT / Waiting Time.</p>
+            </div>
+          </div>
+          <div class="input-group" style="margin-bottom:0.65rem;">
+            <label>Danh sách tiến trình (Tên Arrival Burst)</label>
+            <textarea id="cpu-procs-input" class="form-control mono" rows="4">P1 0 7
+P2 2 4
+P3 4 1</textarea>
+          </div>
+          <div style="display:flex;gap:0.65rem;flex-wrap:wrap;margin-bottom:0.8rem;">
+            <div class="input-group" style="flex:2;margin-bottom:0;">
+              <label>Thuật toán lập lịch</label>
+              <select id="cpu-algo-select" class="form-control">
+                <option value="FCFS">FCFS (First-Come First-Served)</option>
+                <option value="SJF">SJF (Shortest Job First - Non-preemptive)</option>
+                <option value="SRTN" selected>SRTN (Preemptive SJF)</option>
+                <option value="RR">Round Robin (Quantum q)</option>
+              </select>
+            </div>
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>Quantum q (cho RR)</label>
+              <input type="number" id="cpu-quantum-input" class="form-control mono" value="4" min="1" />
+            </div>
+          </div>
+          <button class="btn" id="calc-cpu-btn" style="width:100%;justify-content:center;margin-bottom:0.85rem;">⚡ Chạy Mô Phỏng CPU &amp; Vẽ Sơ Đồ Gantt</button>
+          <div id="cpu-output"></div>
+        </div>
+
+        <!-- Tool 2: Paging & TLB EAT Calculator -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">📄 2. Dịch Địa Chỉ Paging (Ảo &rarr; Vật Lý) &amp; Tính TLB EAT</h3>
+              <p style="font-size:0.86rem;color:var(--text-secondary);">Tự động tách Page Number, Offset, tính Physical Address và thời gian truy cập trung bình EAT.</p>
+            </div>
+          </div>
+          <div style="display:flex;gap:0.6rem;flex-wrap:wrap;margin-bottom:0.65rem;">
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>Page Size (Bytes)</label>
+              <input type="number" id="pg-size" class="form-control mono" value="4096" />
+            </div>
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>Virtual Address</label>
+              <input type="number" id="pg-vaddr" class="form-control mono" value="8196" />
+            </div>
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>Frame tương ứng</label>
+              <input type="number" id="pg-frame" class="form-control mono" value="6" />
+            </div>
+          </div>
+          <div style="display:flex;gap:0.6rem;flex-wrap:wrap;margin-bottom:0.8rem;">
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>TLB Hit Ratio (&alpha;)</label>
+              <input type="number" step="0.05" id="tlb-alpha" class="form-control mono" value="0.8" />
+            </div>
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>t_TLB (ns)</label>
+              <input type="number" id="tlb-time" class="form-control mono" value="20" />
+            </div>
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>t_MEM (ns)</label>
+              <input type="number" id="mem-time" class="form-control mono" value="100" />
+            </div>
+          </div>
+          <button class="btn" id="calc-pg-btn" style="width:100%;justify-content:center;margin-bottom:0.85rem;">⚡ Dịch Địa Chỉ Paging &amp; Tính EAT</button>
+          <div id="pg-output"></div>
+        </div>
+
+        <!-- Tool 3: Page Replacement Simulator -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">🔄 3. Mô Phỏng Thay Thế Trang (FIFO, LRU &amp; Optimal)</h3>
+              <p style="font-size:0.86rem;color:var(--text-secondary);">Nhập chuỗi tham chiếu trang &amp; số khung trang (Frames) để so sánh số Page Faults của cả 3 thuật toán.</p>
+            </div>
+          </div>
+          <div style="display:flex;gap:0.65rem;flex-wrap:wrap;margin-bottom:0.8rem;">
+            <div class="input-group" style="flex:3;margin-bottom:0;">
+              <label>Chuỗi tham chiếu trang (cách nhau bằng dấu phẩy hoặc cách)</label>
+              <input type="text" id="pr-refs" class="form-control mono" value="7, 0, 1, 2, 0, 3, 0, 4, 2, 3" />
+            </div>
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>Số Frames</label>
+              <input type="number" id="pr-frames" class="form-control mono" value="3" min="1" max="10" />
+            </div>
+          </div>
+          <button class="btn" id="calc-pr-btn" style="width:100%;justify-content:center;margin-bottom:0.85rem;">🚀 Đếm Page Faults (FIFO / LRU / Optimal)</button>
+          <div id="pr-output"></div>
+        </div>
+
+        <!-- Tool 4: Banker's Algorithm Simulator -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">🏦 4. Thuật Toán Banker (Kiểm Tra Safe State &amp; Safe Sequence)</h3>
+              <p style="font-size:0.86rem;color:var(--text-secondary);">Hỗ trợ cả 1 loại tài nguyên hoặc nhiều loại (A B C). Mỗi dòng là 1 tiến trình P0, P1, P2...</p>
+            </div>
+          </div>
+          <div style="display:flex;gap:0.65rem;flex-wrap:wrap;margin-bottom:0.65rem;">
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>Allocation (mỗi dòng 1 P)</label>
+              <textarea id="bnk-alloc" class="form-control mono" rows="3">0 1 0
+2 0 0
+3 0 2
+2 1 1
+0 0 2</textarea>
+            </div>
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>Max (mỗi dòng 1 P)</label>
+              <textarea id="bnk-max" class="form-control mono" rows="3">7 5 3
+3 2 2
+9 0 2
+2 2 2
+4 3 3</textarea>
+            </div>
+          </div>
+          <div class="input-group" style="margin-bottom:0.8rem;">
+            <label>Vector Available (tài nguyên đang rảnh)</label>
+            <input type="text" id="bnk-avail" class="form-control mono" value="3 3 2" />
+          </div>
+          <button class="btn" id="calc-banker-btn" style="width:100%;justify-content:center;margin-bottom:0.85rem;">🔍 Chạy Thuật Toán Banker</button>
+          <div id="banker-output"></div>
+        </div>
+
+        <!-- Tool 5: Disk Arm Scheduling -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">💿 5. Lập Lịch Đầu Đọc Đĩa Cứng (FCFS, SSTF &amp; Elevator/LOOK)</h3>
+              <p style="font-size:0.86rem;color:var(--text-secondary);">Tính tự động thứ tự phục vụ và tổng quãng đường di chuyển đầu đọc (Total Head Movement).</p>
+            </div>
+          </div>
+          <div style="display:flex;gap:0.65rem;flex-wrap:wrap;margin-bottom:0.65rem;">
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>Vị trí Head ban đầu</label>
+              <input type="number" id="dsk-head" class="form-control mono" value="11" />
+            </div>
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>Chiều quét ban đầu (Elevator)</label>
+              <select id="dsk-dir" class="form-control">
+                <option value="up" selected>Đi LÊN (Tăng dần ↑)</option>
+                <option value="down">Đi XUỐNG (Giảm dần ↓)</option>
+              </select>
+            </div>
+          </div>
+          <div class="input-group" style="margin-bottom:0.8rem;">
+            <label>Danh sách Cylinder yêu cầu</label>
+            <input type="text" id="dsk-reqs" class="form-control mono" value="1, 36, 16, 34, 9, 12" />
+          </div>
+          <button class="btn" id="calc-disk-btn" style="width:100%;justify-content:center;margin-bottom:0.85rem;">💿 Tính Tổng Quãng Đường Đọc Đĩa</button>
+          <div id="disk-output"></div>
+        </div>
+
+        <!-- Tool 6: Memory Allocation & I-Node Max Size -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">🧩 6. Cấp Phát Bộ Nhớ (First/Best/Worst Fit) &amp; I-Node File Size</h3>
+              <p style="font-size:0.86rem;color:var(--text-secondary);">Kiểm tra lỗ trống được chọn và tính kích thước file tối đa của I-node UNIX/Linux.</p>
+            </div>
+          </div>
+          <div style="display:flex;gap:0.65rem;flex-wrap:wrap;margin-bottom:0.65rem;">
+            <div class="input-group" style="flex:2;margin-bottom:0;">
+              <label>Các lỗ trống RAM (KB)</label>
+              <input type="text" id="mem-holes" class="form-control mono" value="10, 4, 20, 18, 7, 9, 12, 15" />
+            </div>
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>Tiến trình cần (KB)</label>
+              <input type="number" id="mem-req" class="form-control mono" value="12" />
+            </div>
+          </div>
+          <div style="display:flex;gap:0.6rem;flex-wrap:wrap;margin-bottom:0.8rem;">
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>I-node Block (KB)</label>
+              <input type="number" id="in-blk" class="form-control mono" value="4" />
+            </div>
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>Con trỏ (Bytes)</label>
+              <input type="number" id="in-ptr" class="form-control mono" value="4" />
+            </div>
+            <div class="input-group" style="flex:1;margin-bottom:0;">
+              <label>Direct Blocks</label>
+              <input type="number" id="in-dir" class="form-control mono" value="10" />
+            </div>
+          </div>
+          <button class="btn" id="calc-mem-btn" style="width:100%;justify-content:center;margin-bottom:0.85rem;">🧮 Tính Cấp Phát RAM &amp; I-Node Size</button>
+          <div id="mem-output"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 5: FLASHCARDS ==================== -->
+    <section class="tab-panel" id="tab-flashcards">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">🃏 Flashcards Toàn Bộ Câu Hỏi &amp; Công Thức Trọng Tâm OSG202</h2>
+            <p style="font-size:0.92rem;color:var(--text-secondary);margin-top:0.2rem;">
+              Click vào thẻ (hoặc nhấn <code>Space</code>) để lật xem đáp án &amp; lời giải chi tiết • Dùng phím <code>&larr;</code> <code>&rarr;</code> để chuyển thẻ.
+            </p>
+          </div>
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+            <button class="btn btn-sm" id="fc-mode-single-btn">🃏 Lật từng thẻ 3D</button>
+            <button class="btn btn-secondary btn-sm" id="fc-mode-grid-btn">📋 Xem danh sách toàn bộ thẻ</button>
+            <button class="btn btn-secondary btn-sm" id="fc-reveal-all-btn" style="display:none;">👁️ Hiện tất cả đáp án</button>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-bottom:1.1rem;align-items:center;">
+          <input
+            type="text"
+            id="fc-search-input"
+            class="form-control"
+            placeholder="🔎 Tìm trong Flashcards OSG202 (VD: 'fork', 'TLB', 'Belady', 'RAID', 'Banker')..."
+            style="flex:1;min-width:250px;"
+          />
+          <select id="fc-category-select" class="form-control" style="width:auto;min-width:230px;"></select>
+          <select id="fc-status-select" class="form-control" style="width:auto;">
+            <option value="ALL">Tất cả trạng thái</option>
+            <option value="UNMASTERED">Chưa thuộc (Cần ôn)</option>
+            <option value="MASTERED">Đã thuộc ✓</option>
+          </select>
+          <button class="btn btn-secondary" id="fc-shuffle-btn">🔀 Trộn thẻ</button>
+        </div>
+
+        <div id="fc-single-view">
+          <div class="flashcard-stage">
+            <div class="flashcard" id="flashcard-el">
+              <div class="flashcard-face front">
+                <div>
+                  <span class="badge" id="fc-front-cat">OSG202</span>
+                  <div class="fc-term" id="fc-front-term">Đang tải...</div>
+                  <div class="fc-options-preview" id="fc-front-options"></div>
+                </div>
+                <div style="font-size:0.86rem;color:var(--text-muted);text-align:center;padding-top:0.65rem;border-top:1px dashed var(--border);">
+                  👆 Nhấn vào thẻ hoặc bấm phím <strong>Space</strong> để lật xem Đáp án &amp; Lời giải
+                </div>
+              </div>
+              <div class="flashcard-face back">
+                <div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.85rem;">
+                    <span class="badge badge-success">✅ Đáp án đúng &amp; Lời giải</span>
+                    <span style="font-size:0.85rem;color:var(--text-muted);">Nhấn để lật lại câu hỏi</span>
+                  </div>
+                  <div id="fc-back-correct-box" class="fc-correct-box"></div>
+                  <div class="fc-answer" id="fc-back-ans" style="white-space:pre-line;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:center;justify-content:center;gap:0.85rem;flex-wrap:wrap;margin-top:1.1rem;">
+            <button class="btn btn-secondary" id="fc-prev-btn">&larr; Thẻ trước</button>
+            <span id="fc-counter" style="font-weight:800;min-width:120px;text-align:center;font-size:1.05rem;">1 / 82</span>
+            <button class="btn" id="fc-next-btn">Thẻ tiếp &rarr;</button>
+            <button class="btn btn-secondary" id="fc-master-btn">⭐ Đánh dấu Đã thuộc</button>
+          </div>
+        </div>
+
+        <div id="fc-grid-view" style="display:none;">
+          <div id="fc-grid-container" class="fc-grid-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 6: QUIZ & MOCK EXAM (EOS SIMULATOR) ==================== -->
+    <section class="tab-panel" id="tab-quiz">
+      <div class="card" style="margin-bottom:1.25rem;border:1px solid var(--accent);">
+        <div class="card-header" style="margin-bottom:0.75rem;">
+          <div>
+            <h2 class="card-title">🏛️ Phòng Thi Thử FE OSG202 Chuẩn EOS FPT (60 Phút / Thang Điểm 10.0)</h2>
+            <p style="font-size:0.92rem;color:var(--text-secondary);margin-top:0.2rem;">
+              Thi thử đề chuẩn 50 câu bấm giờ 60 phút hoặc luyện tập theo từng chương (kèm lời giải từng bước chi tiết).
+            </p>
+          </div>
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+            <button class="btn btn-sm" onclick="launchOsgExam('ALL', 'exam', 60, 50)">⏱️ Thi Đề Chuẩn 50 Câu (60p)</button>
+            <button class="btn btn-success btn-sm" onclick="launchOsgExam('🏆 Đề FE OSG202 Các Mùa Trước (FPT Bank)', 'practice', 45, 999)">🏆 30 Câu Trọng Tâm (Full Giải)</button>
+            <button class="btn btn-secondary btn-sm" onclick="launchOsgExam('ALL', 'practice', 90, 999)">💡 Luyện Toàn Bộ 429 Câu</button>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:0.85rem;">
+          <div style="display:flex;gap:0.75rem;flex-wrap:wrap;flex:1;">
+            <div class="input-group" style="margin-bottom:0;min-width:220px;flex:1;">
+              <label>Chủ đề câu hỏi</label>
+              <select id="quiz-topic-select" class="form-control"></select>
+            </div>
+            <div class="input-group" style="margin-bottom:0;width:240px;">
+              <label>Chế độ làm bài</label>
+              <select id="quiz-mode-select" class="form-control">
+                <option value="exam">⏱️ Thi Như Thật (Bấm giờ &amp; Chấm điểm)</option>
+                <option value="practice">💡 Luyện tập (Hiện lời giải ngay)</option>
+              </select>
+            </div>
+            <div class="input-group" style="margin-bottom:0;width:155px;">
+              <label>Số lượng câu</label>
+              <select id="quiz-count-select" class="form-control">
+                <option value="15">15 câu</option>
+                <option value="30">30 câu</option>
+                <option value="50" selected>50 câu (Chuẩn FE)</option>
+                <option value="999">Tất cả câu</option>
+              </select>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.6rem;">
+            <span class="badge badge-warning mono" id="quiz-timer-box" style="display:none;font-size:1.05rem;padding:0.5rem 0.9rem;font-weight:800;">⏱️ 60:00</span>
+            <button class="btn" id="quiz-start-btn">🚀 Bắt đầu / Làm mới</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="quiz-result-banner" style="display:none;"></div>
+
+      <div class="quiz-layout">
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.85rem;">
+            <div id="quiz-q-meta" style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;"></div>
+            <button class="btn btn-secondary btn-sm" id="quiz-flag-btn">🏳️ Gắn cờ xem lại</button>
+          </div>
+
+          <div id="quiz-q-text" class="quiz-question-text" style="white-space:pre-line;"></div>
+          <div id="quiz-options-list"></div>
+          <div id="quiz-explanation-box" class="explanation-box" style="display:none;"></div>
+
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.55rem;margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--border);">
+            <button class="btn btn-secondary" id="quiz-prev-btn">&larr; Câu trước</button>
+            <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+              <button class="btn btn-secondary" id="quiz-peek-ans-btn">👁️ Xem lời giải câu này</button>
+              <button class="btn btn-success" id="quiz-submit-btn">🏁 Nộp bài &amp; Chấm điểm</button>
+            </div>
+            <button class="btn" id="quiz-next-btn">Câu tiếp &rarr;</button>
+          </div>
+        </div>
+
+        <div class="card" style="height:fit-content;">
+          <div class="card-header" style="margin-bottom:0.65rem;">
+            <div>
+              <h3 class="card-title" style="font-size:0.96rem;">🗺️ Bảng Câu Hỏi (EOS Palette)</h3>
+              <div id="quiz-progress-summary" style="font-size:0.82rem;color:var(--text-secondary);margin-top:0.15rem;">Đã làm: 0 / 50 câu</div>
+            </div>
+          </div>
+          <div class="q-palette" id="quiz-palette-grid"></div>
+        </div>
+      </div>
+
+      <div id="quiz-full-review-sheet" style="display:none;margin-top:1.25rem;"></div>
+    </section>
+  </main>
+
+  <div class="toast" id="app-toast">Đã lưu!</div>
+
+  <footer class="footer">
+    OSG202 Study Hub • Thiết kế chuyên biệt cho sinh viên FPT University ôn tập môn Operating Systems (Hệ điều hành — Tanenbaum 4th Ed.).
+  </footer>
+
+  <script src="js/osg202-data.js?v=20261121-3"></script>
+  <script src="js/osg202-fptbank.js?v=20261121-3"></script>
+  <script src="js/osg202-lessons.js?v=20261121-3"></script>
+  <script src="js/osg202-app.js?v=20261121-3"></script>
+</body>
+</html>

@@ -154,6 +154,14 @@
 
   window.switchTab = switchTab;
 
+  window.openImageZoom = function (src) {
+    const modal = document.getElementById("img-zoom-modal");
+    const target = document.getElementById("img-zoom-target");
+    if (!modal || !target || !src) return;
+    target.src = src;
+    modal.style.display = "flex";
+  };
+
   window.launchRealExam = function (topicName, mode = "exam", durationMinutes = 60, countOverride = 999) {
     switchTab("quiz");
     const topicSelect = document.getElementById("quiz-topic-select");
