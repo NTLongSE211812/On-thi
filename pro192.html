@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRO192 Study Hub — Object-Oriented Programming with Java (FPT University)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-inner">
+      <a href="#" class="brand" onclick="switchTab('dashboard'); return false;">
+        <div class="brand-logo" style="background:linear-gradient(135deg,#f97316,#ef4444);">PRO</div>
+        <div>
+          <span class="brand-title">PRO192 Study Hub</span>
+          <span class="brand-subtitle">Object-Oriented Programming with Java • Ôn Thi PE (Q1–Q4) &amp; FE FPT University</span>
+        </div>
+      </a>
+
+      <nav class="nav-tabs" aria-label="Điều hướng chính">
+        <button class="nav-tab active" data-tab="dashboard">📊 Tổng quan</button>
+        <button class="nav-tab" data-tab="cheatsheet">🎯 Mẫu Code PE (Q1–Q4)</button>
+        <button class="nav-tab" data-tab="theory">🎓 Bài Giảng Dễ Hiểu</button>
+        <button class="nav-tab" data-tab="tools">🧪 Phòng Lab Java</button>
+        <button class="nav-tab" data-tab="flashcards">🃏 Flashcards</button>
+        <button class="nav-tab" data-tab="quiz">📝 Phòng Thi Thử FE (60p)</button>
+      </nav>
+
+      <div class="header-actions">
+        <a href="index.html" class="icon-btn" style="text-decoration:none;" title="Sang môn NWC204 (Computer Networking)">🌐 NWC204</a>
+        <a href="mad101.html" class="icon-btn" style="text-decoration:none;" title="Sang môn MAD101 (Discrete Mathematics)">📐 MAD101</a>
+        <a href="osg202.html" class="icon-btn" style="text-decoration:none;" title="Sang môn OSG202 (Operating Systems)">💻 OSG202</a>
+        <div class="font-size-group" title="Điều chỉnh kích thước chữ trên toàn trang">
+          <button class="font-btn" data-scale="0.95" onclick="setFontScale(0.95)">A-</button>
+          <button class="font-btn active" data-scale="1.05" onclick="setFontScale(1.05)">A</button>
+          <button class="font-btn" data-scale="1.18" onclick="setFontScale(1.18)">A+</button>
+        </div>
+        <button class="icon-btn" id="theme-toggle-btn" title="Đổi giao diện Sáng / Tối">☀️ Light</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-container">
+    <!-- ==================== TAB 1: DASHBOARD ==================== -->
+    <section class="tab-panel active" id="tab-dashboard">
+      <!-- Quick Global Search -->
+      <div class="card" style="margin-bottom:1.5rem;">
+        <div class="card-header" style="margin-bottom:0.65rem;">
+          <div class="card-title">🔍 Tra cứu nhanh toàn bộ kiến thức, Mẫu PE &amp; Câu hỏi FE PRO192</div>
+          <span class="badge">OOP • Polymorphism • Exception • Collections • Comparator • Java I/O</span>
+        </div>
+        <input
+          type="text"
+          id="global-search-input"
+          class="form-control"
+          placeholder="Nhập từ khóa bất kỳ: ví dụ 'protected', 'Dynamic Binding', 'finally', 'HashSet', 'Comparator', 'subList', 'StringBuilder', 'transient', 'split'..."
+        />
+        <div
+          id="global-search-results"
+          style="display:none;margin-top:0.75rem;background:var(--bg-input);border:1px solid var(--border);border-radius:8px;max-height:360px;overflow-y:auto;"
+        ></div>
+      </div>
+
+      <!-- Progress Stats -->
+      <div class="grid-4">
+        <div class="card stat-card">
+          <span class="stat-label">📚 Chương lý thuyết đã học</span>
+          <div class="stat-value" id="stat-chapters-val">0/6</div>
+          <div class="stat-sub" id="stat-chapters-sub">Hoàn thành 0% chương trình</div>
+          <div class="progress-bar"><div class="progress-fill" id="stat-chapters-bar" style="width:0%"></div></div>
+        </div>
+
+        <div class="card stat-card">
+          <span class="stat-label">🃏 Flashcards đã thuộc</span>
+          <div class="stat-value" id="stat-fc-val">0/437</div>
+          <div class="stat-sub" id="stat-fc-sub">Đã thuộc 0% thẻ trắc nghiệm</div>
+          <div class="progress-bar"><div class="progress-fill" id="stat-fc-bar" style="width:0%"></div></div>
+        </div>
+
+        <div class="card stat-card">
+          <span class="stat-label">🏆 Điểm Thi thử FE cao nhất</span>
+          <div class="stat-value" id="stat-quiz-val">0%</div>
+          <div class="stat-sub" id="stat-quiz-sub">0 lần làm bài • 425 câu FE</div>
+          <div class="progress-bar"><div class="progress-fill" id="stat-quiz-bar" style="width:0%"></div></div>
+        </div>
+
+        <div class="card stat-card">
+          <span class="stat-label">🔥 Câu hỏi cần ôn lại (Làm sai)</span>
+          <div class="stat-value" id="stat-wrong-val" style="color:var(--warning);">0</div>
+          <div class="stat-sub">Tự động lưu khi làm trắc nghiệm</div>
+          <div style="margin-top:0.5rem;">
+            <button class="btn btn-secondary btn-sm" onclick="launchProExam('WRONG', 'practice', 30, 999)">Ôn ngay &rarr;</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- FE & PE Breakdown -->
+      <div class="card" id="fe-analysis-container" style="margin-bottom:1.5rem;"></div>
+
+      <!-- Quick Reference Summary Tables -->
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">🔐 Bảng Ma Trận Access Modifiers (Siêu Hay Hỏi FE)</h2>
+            <span class="badge badge-warning">Chapter 2 &amp; 3</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Modifier</th>
+                  <th>Cùng Class</th>
+                  <th>Cùng Package</th>
+                  <th>Subclass khác Pkg</th>
+                  <th>Ngoài (World)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><code>public</code></td><td>✅ Có</td><td>✅ Có</td><td>✅ Có</td><td>✅ Có</td></tr>
+                <tr><td><code>protected</code></td><td>✅ Có</td><td>✅ Có</td><td>✅ Có (qua lớp con)</td><td>❌ Không</td></tr>
+                <tr><td><code>default</code></td><td>✅ Có</td><td>✅ Có</td><td>❌ Không</td><td>❌ Không</td></tr>
+                <tr><td><code>private</code></td><td>✅ Có</td><td>❌ Không</td><td>❌ Không</td><td>❌ Không</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">⚡ 5 Quy Tắc Vàng PRO192 (Tránh Bẫy Mất Điểm Oan)</h2>
+            <span class="badge badge-success">FE &amp; PE</span>
+          </div>
+          <div class="theory-box" style="margin-bottom:0.75rem;">
+            <ul>
+              <li><strong>Dynamic Binding (`Parent p = new Child();`):</strong> Gọi <strong>Method</strong> theo <code>Child</code>, nhưng gọi <strong>Field / Static</strong> theo <code>Parent</code>!</li>
+              <li><strong>Integer &amp; String Pool:</strong> <code>Integer</code> cache <code>[-128..127]</code>; <code>String</code> literal dùng chung pool — luôn dùng <code>.equals()</code>!</li>
+              <li><strong>Try-Finally:</strong> <code>finally</code> LUÔN chạy trừ <code>System.exit(0)</code>; nếu <code>finally</code> có <code>return</code> sẽ GHI ĐÈ <code>return</code> của <code>try/catch</code>!</li>
+              <li><strong>ArrayList&lt;Integer&gt;:</strong> <code>list.remove(1)</code> xóa theo <strong>INDEX 1</strong>, muốn xóa số 1 phải gọi <code>remove(Integer.valueOf(1))</code>!</li>
+              <li><strong>PE Q3 &amp; Q4:</strong> Sort đoạn con dùng <code>Collections.sort(t.subList(L, R+1), cmp)</code>; tách từ dùng <code>str.trim().split("\\s+")</code>!</li>
+            </ul>
+          </div>
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+            <button class="btn btn-sm" onclick="switchTab('cheatsheet')">🎯 Xem Mẫu Code PE Q1–Q4</button>
+            <button class="btn btn-secondary btn-sm" onclick="switchTab('tools')">🧪 Mở 6 Công Cụ Java Lab</button>
+            <button class="btn btn-success btn-sm" onclick="launchProExam('ALL', 'exam', 60, 50)">⏱️ Thi thử FE 50 câu (60p)</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Collections Quick Comparison -->
+      <div class="card" style="margin-top:1.25rem;">
+        <div class="card-header">
+          <h2 class="card-title">📦 Bảng So Sánh Nhanh Java Collections Framework</h2>
+          <span class="badge">Chapter 5 • FE &amp; PE Q3</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Lớp Collection</th>
+                <th>Nhánh</th>
+                <th>Cho trùng lặp?</th>
+                <th>Thứ tự lưu trữ</th>
+                <th>Cho phép <code>null</code>?</th>
+                <th>Thế mạnh chính</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><code>ArrayList</code></td><td>List</td><td>✅ Có</td><td>Theo thứ tự thêm (Index)</td><td>✅ Nhiều</td><td>Truy xuất <code>get(i)</code> siêu nhanh O(1)</td></tr>
+              <tr><td><code>LinkedList</code></td><td>List / Deque</td><td>✅ Có</td><td>Theo thứ tự thêm</td><td>✅ Nhiều</td><td>Thêm/xóa đầu &amp; cuối nhanh O(1)</td></tr>
+              <tr><td><code>HashSet</code></td><td>Set</td><td>❌ Không</td><td>Không cố định (Hash)</td><td>✅ Tối đa 1</td><td>Kiểm tra tồn tại <code>contains()</code> O(1)</td></tr>
+              <tr><td><code>LinkedHashSet</code></td><td>Set</td><td>❌ Không</td><td>Giữ thứ tự thêm vào</td><td>✅ Tối đa 1</td><td>Loại trùng nhưng vẫn giữ thứ tự gốc</td></tr>
+              <tr><td><code>TreeSet</code></td><td>Set</td><td>❌ Không</td><td>Tự sắp xếp tăng dần</td><td>❌ Cấm (NPE!)</td><td>Dữ liệu luôn có thứ tự O(log n)</td></tr>
+              <tr><td><code>HashMap</code></td><td>Map (riêng)</td><td>Key ❌ / Val ✅</td><td>Không cố định</td><td>Key: 1 / Val: Nhiều</td><td>Tra cứu Key → Value nhanh O(1)</td></tr>
+              <tr><td><code>TreeMap</code></td><td>Map (riêng)</td><td>Key ❌ / Val ✅</td><td>Sắp xếp theo Key tăng</td><td>Key: ❌ / Val: ✅</td><td>Từ điển tự sắp xếp theo Key</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 2: PE TEMPLATES (Q1-Q4) ==================== -->
+    <section class="tab-panel" id="tab-cheatsheet">
+      <div class="card" style="margin-bottom:1.25rem;">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">🎯 Bộ Khung Code Chuẩn Thi Thực Hành PE PRO192 (85 Phút — 4 Câu Q1–Q4)</h2>
+            <p style="font-size:0.92rem;color:var(--text-secondary);margin-top:0.2rem;">
+              Tổng hợp đầy đủ mẫu code Java chuẩn NetBeans cho Q1 (Encapsulation), Q2 (Inheritance), Q3 (List &amp; Comparator), Q4 (IString) — bấm Copy để luyện tập nhanh!
+            </p>
+          </div>
+          <span class="badge badge-success">Thực chiến PE 10/10</span>
+        </div>
+
+        <div class="theory-box" style="margin-bottom:1rem;border-left:4px solid var(--warning);">
+          <strong>⚠️ Checklist 6 Lỗi Hay Khiến Bài PE PRO192 Bị 0 Điểm Trên Máy Chấm FPT:</strong>
+          <ol style="margin-top:0.35rem;padding-left:1.25rem;line-height:1.7;">
+            <li><strong>Sửa file <code>Main.java</code> hoặc đổi tên package / tên class / chữ ký hàm:</strong> Tuyệt đối KHÔNG chạm vào <code>Main.java</code> của đề.</li>
+            <li><strong>Thiếu Default Constructor <code>ClassName() {}</code>:</strong> Luôn viết đủ constructor rỗng + constructor đầy đủ tham số cho Q1 và Q2.</li>
+            <li><strong>Sai khoảng trắng / dấu phẩy trong <code>toString()</code> của Q2:</strong> Máy chấm so khớp chuỗi chính xác từng ký tự (VD: <code>maker + ", " + price + ", " + type</code>).</li>
+            <li><strong>Quên kiểm tra biên mảng/chuỗi:</strong> Luôn check <code>if (t == null || t.isEmpty())</code> hoặc <code>s.length()</code> trước khi <code>substring</code> / <code>subList</code>.</li>
+            <li><strong>Dùng <code>t.subList(L, R)</code> nhầm chỉ số cuối:</strong> Tham số thứ 2 là <em>exclusive</em> — muốn gồm cả index <code>R</code> phải viết <code>t.subList(L, R + 1)</code>!</li>
+            <li><strong>Xóa phần tử trong vòng lặp <code>for-each</code>:</strong> Sẽ nổ <code>ConcurrentModificationException</code> — luôn dùng vòng lặp <code>for (int i = 0; ...)</code> kèm <code>break</code> hoặc duyệt ngược từ cuối!</li>
+          </ol>
+        </div>
+
+        <div id="pe-templates-container"></div>
+      </div>
+
+      <!-- Quick Compare Table for FE -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">📋 Bảng So Sánh Kinh Điển Hay Ra Trong Đề FE PRO192</h2>
+          <span class="badge">Tóm tắt 1 trang</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Cặp Khái Niệm</th>
+                <th>Bên Trái</th>
+                <th>Bên Phải</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Overloading vs Overriding</strong></td>
+                <td><strong>Overloading:</strong> Compile-time; cùng tên, <em>khác</em> danh sách tham số (cùng hoặc khác class).</td>
+                <td><strong>Overriding:</strong> Runtime; ở lớp con, <em>cùng</em> tên + tham số, modifier rộng hơn/bằng.</td>
+              </tr>
+              <tr>
+                <td><strong>Abstract Class vs Interface</strong></td>
+                <td><strong>Abstract Class:</strong> <code>extends</code> (đơn kế thừa), CÓ constructor, có biến instance thường.</td>
+                <td><strong>Interface:</strong> <code>implements</code> (đa kế thừa), KHÔNG constructor, field <code>public static final</code>, Java 8+ có <code>default/static</code> method.</td>
+              </tr>
+              <tr>
+                <td><strong>String vs StringBuilder vs StringBuffer</strong></td>
+                <td><strong>String:</strong> Immutable (bất biến), có String Pool.</td>
+                <td><strong>StringBuilder / Buffer:</strong> Mutable; Builder nhanh nhất (non-thread-safe), Buffer có <code>synchronized</code> (thread-safe).</td>
+              </tr>
+              <tr>
+                <td><strong>Comparable vs Comparator</strong></td>
+                <td><strong>Comparable&lt;T&gt;:</strong> Cài trong chính class, viết <code>compareTo(T o)</code> (1 tiêu chí mặc định).</td>
+                <td><strong>Comparator&lt;T&gt;:</strong> Tách riêng ngoài class, viết <code>compare(T a, T b)</code> (nhiều tiêu chí linh hoạt).</td>
+              </tr>
+              <tr>
+                <td><strong>Checked vs Unchecked Exception</strong></td>
+                <td><strong>Checked:</strong> <code>IOException</code>, <code>SQLException</code> — BẮT BUỘC try-catch hoặc throws lúc biên dịch.</td>
+                <td><strong>Unchecked:</strong> Con của <code>RuntimeException</code> (NPE, Arithmetic, ClassCast) — lỗi logic lúc chạy.</td>
+              </tr>
+              <tr>
+                <td><strong>Byte Stream vs Character Stream</strong></td>
+                <td><strong>Byte (8-bit):</strong> <code>InputStream / OutputStream</code> — ảnh, âm thanh, dữ liệu nhị phân.</td>
+                <td><strong>Character (16-bit):</strong> <code>Reader / Writer</code> — văn bản text Unicode (<code>BufferedReader.readLine()</code>).</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 3: INTERACTIVE LESSONS ==================== -->
+    <section class="tab-panel" id="tab-theory">
+      <div class="card" style="margin-bottom:1.25rem;">
+        <div class="card-header" style="margin-bottom:0.65rem;">
+          <div>
+            <h2 class="card-title">🎓 Bài Giảng PRO192 Dễ Hiểu (Kèm Ví Dụ Đời Thường, Code Trace &amp; Mini-Quiz)</h2>
+            <p style="font-size:0.92rem;color:var(--text-secondary);margin-top:0.2rem;">
+              6 bài giảng đi từ cơ bản đến nâng cao bám sát đề PE &amp; FE FPT University. Mỗi bài đều có 3 câu Mini-Quiz kiểm tra hiểu bài ngay lập tức!
+            </p>
+          </div>
+          <div style="display:flex;gap:0.5rem;">
+            <button class="btn btn-sm" id="pro-mode-lessons-btn">🎓 Bài Giảng Chi Tiết (6 Bài)</button>
+            <button class="btn btn-secondary btn-sm" id="pro-mode-summary-btn">📚 Sổ Tay Tóm Tắt 6 Chương</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive Lessons View -->
+      <div id="pro-lessons-view">
+        <div id="lesson-selector-pills" style="display:flex;flex-wrap:wrap;gap:0.55rem;margin-bottom:1.1rem;"></div>
+        <div id="lesson-content-box"></div>
+      </div>
+
+      <!-- Chapter Summaries View -->
+      <div id="pro-summary-view" style="display:none;">
+        <div id="chapters-container"></div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 4: 6 INTERACTIVE JAVA LAB TOOLS ==================== -->
+    <section class="tab-panel" id="tab-tools">
+      <div class="card" style="margin-bottom:1.25rem;">
+        <div class="card-header" style="margin-bottom:0.35rem;">
+          <div>
+            <h2 class="card-title">🧪 Phòng Lab &amp; 6 Công Cụ Mô Phỏng PRO192 (Thực Chiến PE &amp; FE)</h2>
+            <p style="font-size:0.92rem;color:var(--text-secondary);margin-top:0.2rem;">
+              Kiểm tra trực quan Access Modifiers, test xử lý chuỗi PE Q4, mô phỏng Comparator/Sublist Sort PE Q3, trace bẫy toán tử &amp; Đa hình Dynamic Binding!
+            </p>
+          </div>
+          <span class="badge badge-success">6 Công cụ trực quan</span>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <!-- Tool 1: Access Modifier & Override Rule Checker -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">1️⃣ Kiểm Tra Access Modifier &amp; Luật Override</h3>
+            <span class="badge">Ch.2 &amp; Ch.3</span>
+          </div>
+          <div class="grid-2" style="gap:0.65rem;">
+            <div class="input-group">
+              <label>Access Modifier của thành viên</label>
+              <select id="lab-mod-select" class="form-control">
+                <option value="public">public</option>
+                <option value="protected" selected>protected</option>
+                <option value="default">default (không ghi từ khóa)</option>
+                <option value="private">private</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label>Vị trí gọi truy cập</label>
+              <select id="lab-scope-select" class="form-control">
+                <option value="same_class">Trong cùng Class</option>
+                <option value="same_pkg">Class khác nhưng cùng Package</option>
+                <option value="sub_diff_pkg" selected>Lớp con (Subclass) ở Package khác</option>
+                <option value="world">Class ngoài ở Package khác</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn btn-sm" id="lab-mod-btn">🔍 Kiểm tra quyền truy cập &amp; Override</button>
+          <div id="lab-mod-output" class="theory-box" style="margin-top:0.85rem;"></div>
+        </div>
+
+        <!-- Tool 2: String & Regex Tester (PE Q4) -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">2️⃣ Java String &amp; Regex Tester (Luyện PE Q4)</h3>
+            <span class="badge badge-warning">PE Q4 • Ch.5</span>
+          </div>
+          <div class="input-group">
+            <label>Chuỗi đầu vào (<code>str</code>)</label>
+            <input type="text" id="lab-str-input" class="form-control mono" value="  ab12   level   fpt2026   madam   a5b  " />
+          </div>
+          <div class="grid-2" style="gap:0.65rem;">
+            <div class="input-group">
+              <label>Phép xử lý PE Q4 muốn test</label>
+              <select id="lab-str-op" class="form-control">
+                <option value="words">Tách từ chuẩn: trim().split("\\s+")</option>
+                <option value="palindrome">Tìm &amp; đếm các từ đối xứng (Palindrome)</option>
+                <option value="prime_digit">Đếm từ chứa chữ số nguyên tố (2, 3, 5, 7)</option>
+                <option value="rev_longest">Đảo ngược từ dài nhất đầu tiên</option>
+                <option value="substring">Test substring(start, end)</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label>Chỉ số substring (<code>start,end</code> — chỉ dùng cho mục 5)</label>
+              <input type="text" id="lab-str-range" class="form-control mono" value="1,4" />
+            </div>
+          </div>
+          <button class="btn btn-sm" id="lab-str-btn">▶️ Chạy thử &amp; Sinh code Java</button>
+          <div id="lab-str-output" class="theory-box" style="margin-top:0.85rem;"></div>
+        </div>
+
+        <!-- Tool 3: Comparator & Sublist Sort Visualizer (PE Q3) -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">3️⃣ Comparator &amp; Sublist Sort Visualizer (PE Q3)</h3>
+            <span class="badge badge-warning">PE Q3 f3</span>
+          </div>
+          <div class="input-group">
+            <label>Danh sách <code>(Name:Price)</code> cách nhau dấu phẩy</label>
+            <input type="text" id="lab-sort-input" class="form-control mono" value="Ford:50, Audi:30, BMW:50, Kia:20, Audi:70, Vin:40" />
+          </div>
+          <div class="grid-2" style="gap:0.65rem;">
+            <div class="input-group">
+              <label>Tiêu chí sắp xếp</label>
+              <select id="lab-sort-mode" class="form-control">
+                <option value="name_asc_price_desc">Name tăng dần → nếu bằng thì Price giảm dần</option>
+                <option value="price_asc_name_asc">Price tăng dần → nếu bằng thì Name tăng dần</option>
+                <option value="price_desc">Price giảm dần</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label>Phạm vi sort (<code>all</code> hoặc <code>L,R</code> — VD: <code>0,3</code>)</label>
+              <input type="text" id="lab-sort-range" class="form-control mono" value="0,3" />
+            </div>
+          </div>
+          <button class="btn btn-sm" id="lab-sort-btn">📊 Sắp xếp &amp; Sinh code Comparator</button>
+          <div id="lab-sort-output" class="theory-box" style="margin-top:0.85rem;"></div>
+        </div>
+
+        <!-- Tool 4: Operator & Type Casting Trap Tracer (FE Ch.1) -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">4️⃣ Trace Bẫy Toán Tử, Ép Kiểu &amp; Pool (FE Ch.1–2)</h3>
+            <span class="badge">Code Output FE</span>
+          </div>
+          <div class="input-group">
+            <label>Chọn bài bẫy kinh điển muốn xem trace từng bước</label>
+            <select id="lab-op-preset" class="form-control">
+              <option value="inc">int x = 5; int y = x++ + ++x;</option>
+              <option value="concat">1 + 2 + "3" + 4 + 5  vs  "3" + 1 + 2</option>
+              <option value="byte_promo">byte b = 127; b++;  vs  b = b + 1;</option>
+              <option value="short_circuit">(a &gt; 5 &amp;&amp; ++b &gt; 2)  vs  (a &gt; 5 &amp; ++b &gt; 2)</option>
+              <option value="int_cache">Integer Pool Cache: 127 == 127 vs 128 == 128</option>
+              <option value="finally_ret">try { return x; } finally { x = 2; } vs finally { return 2; }</option>
+            </select>
+          </div>
+          <button class="btn btn-sm" id="lab-op-btn">⚡ Trace từng dòng thực thi</button>
+          <div id="lab-op-output" class="theory-box" style="margin-top:0.85rem;"></div>
+        </div>
+
+        <!-- Tool 5: Polymorphism & Dynamic Binding Tracer (FE Ch.3) -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">5️⃣ Mô Phỏng Đa Hình &amp; Dynamic Binding</h3>
+            <span class="badge badge-warning">Siêu trọng tâm Ch.3</span>
+          </div>
+          <div class="input-group">
+            <label>Chọn tình huống <code>Parent p = new Child();</code></label>
+            <select id="lab-poly-preset" class="form-control">
+              <option value="method_vs_field">Gọi p.show() (Instance) vs p.x (Field)</option>
+              <option value="static_hiding">Gọi p.staticShow() (Method Hiding)</option>
+              <option value="ctor_poly">Constructor Cha gọi hàm bị Override bởi Con (Bẫy x = 0!)</option>
+              <option value="downcast">Upcasting &amp; Downcasting (ClassCastException)</option>
+              <option value="init_order">Thứ tự chạy Static → Instance → Constructor Cha/Con</option>
+            </select>
+          </div>
+          <button class="btn btn-sm" id="lab-poly-btn">🧬 Xem Compile-Time vs Runtime Binding</button>
+          <div id="lab-poly-output" class="theory-box" style="margin-top:0.85rem;"></div>
+        </div>
+
+        <!-- Tool 6: Collections & Exception Quick Lookup -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">6️⃣ Tra Cứu Nhanh Collections &amp; Exceptions</h3>
+            <span class="badge">Ch.4 &amp; Ch.5</span>
+          </div>
+          <div class="input-group">
+            <label>Chọn lớp Collection hoặc Exception cần tra cứu</label>
+            <select id="lab-col-select" class="form-control">
+              <optgroup label="📦 Collections Framework">
+                <option value="ArrayList">ArrayList&lt;E&gt;</option>
+                <option value="LinkedList">LinkedList&lt;E&gt;</option>
+                <option value="HashSet">HashSet&lt;E&gt;</option>
+                <option value="LinkedHashSet">LinkedHashSet&lt;E&gt;</option>
+                <option value="TreeSet">TreeSet&lt;E&gt;</option>
+                <option value="HashMap">HashMap&lt;K, V&gt;</option>
+                <option value="TreeMap">TreeMap&lt;K, V&gt;</option>
+                <option value="Hashtable">Hashtable&lt;K, V&gt;</option>
+              </optgroup>
+              <optgroup label="⚠️ Java Exceptions">
+                <option value="NullPointerException">NullPointerException</option>
+                <option value="ArithmeticException">ArithmeticException</option>
+                <option value="ClassCastException">ClassCastException</option>
+                <option value="ConcurrentModificationException">ConcurrentModificationException</option>
+                <option value="IOException">IOException</option>
+                <option value="NotSerializableException">NotSerializableException</option>
+              </optgroup>
+            </select>
+          </div>
+          <button class="btn btn-sm" id="lab-col-btn">🔎 Tra cứu đặc tính &amp; Bẫy thi</button>
+          <div id="lab-col-output" class="theory-box" style="margin-top:0.85rem;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 5: FLASHCARDS (100% MCQ) ==================== -->
+    <section class="tab-panel" id="tab-flashcards">
+      <div class="card" style="margin-bottom:1.25rem;">
+        <div class="card-header" style="margin-bottom:0.75rem;">
+          <div>
+            <h2 class="card-title">🃏 Flashcards Trắc Nghiệm PRO192 (437 Thẻ — Gồm Đủ 6 Đề Thật 2025–2026)</h2>
+            <p style="font-size:0.9rem;color:var(--text-secondary);margin-top:0.15rem;">
+              Bấm vào thẻ (hoặc phím Space) để lật xem đáp án đúng và giải thích chi tiết từng dòng code. Dùng phím mũi tên &larr; / &rarr; để chuyển thẻ nhanh!
+            </p>
+          </div>
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+            <button class="btn btn-sm" id="fc-mode-single-btn">🃏 Chế độ Lật thẻ 3D</button>
+            <button class="btn btn-secondary btn-sm" id="fc-mode-grid-btn">📋 Xem danh sách (Grid)</button>
+            <button class="btn btn-secondary btn-sm" id="fc-shuffle-btn">🔀 Xáo trộn</button>
+          </div>
+        </div>
+
+        <div class="grid-3" style="gap:0.75rem;">
+          <div class="input-group" style="margin-bottom:0;">
+            <label>Lọc theo chủ đề</label>
+            <select id="fc-category-select" class="form-control"></select>
+          </div>
+          <div class="input-group" style="margin-bottom:0;">
+            <label>Trạng thái ôn tập</label>
+            <select id="fc-status-select" class="form-control">
+              <option value="ALL">Tất cả thẻ</option>
+              <option value="UNMASTERED">⏳ Chưa thuộc</option>
+              <option value="MASTERED">⭐ Đã thuộc</option>
+            </select>
+          </div>
+          <div class="input-group" style="margin-bottom:0;">
+            <label>Tìm kiếm nhanh trong thẻ</label>
+            <input type="text" id="fc-search-input" class="form-control" placeholder="Nhập từ khóa: static, finally, TreeSet, transient..." />
+          </div>
+        </div>
+      </div>
+
+      <!-- Single 3D Card Mode -->
+      <div id="fc-single-view">
+        <div class="flashcard-stage">
+          <div class="flashcard" id="flashcard-el" tabindex="0">
+            <div class="flashcard-face front">
+              <div style="display:flex;justify-content:space-between;align-items:center;width:100%;margin-bottom:0.75rem;">
+                <span class="badge" id="fc-front-cat">Chủ đề</span>
+                <span class="mono" style="font-size:0.88rem;color:var(--text-muted);font-weight:700;" id="fc-counter">Thẻ 1 / 437</span>
+              </div>
+              <div class="flashcard-term" id="fc-front-term" style="white-space:pre-line;text-align:left;width:100%;font-size:1.08rem;"></div>
+              <div id="fc-front-img-wrap" style="display:none;width:100%;margin-top:0.65rem;text-align:center;"></div>
+              <div class="fc-options-preview" id="fc-front-options" style="width:100%;margin-top:0.85rem;"></div>
+              <div style="margin-top:auto;padding-top:0.9rem;font-size:0.84rem;color:var(--text-muted);">
+                👆 Bấm vào thẻ (hoặc phím Space) để lật xem đáp án &amp; giải thích chi tiết
+              </div>
+            </div>
+
+            <div class="flashcard-face back">
+              <div id="fc-back-correct-box" style="width:100%;padding:0.75rem 1rem;border-radius:10px;background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.35);margin-bottom:0.85rem;"></div>
+              <div class="flashcard-answer" id="fc-back-ans" style="width:100%;text-align:left;font-size:0.96rem;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;justify-content:center;align-items:center;gap:0.75rem;flex-wrap:wrap;margin-top:1.1rem;">
+          <button class="btn btn-secondary" id="fc-prev-btn">&larr; Thẻ trước</button>
+          <button class="btn" id="fc-flip-btn">🔄 Lật thẻ</button>
+          <button class="btn btn-secondary" id="fc-master-btn">⭐ Đánh dấu Đã thuộc</button>
+          <button class="btn btn-secondary" id="fc-next-btn">Thẻ sau &rarr;</button>
+        </div>
+      </div>
+
+      <!-- Grid View Mode -->
+      <div id="fc-grid-view" style="display:none;">
+        <div style="display:flex;justify-content:flex-end;margin-bottom:0.85rem;">
+          <button class="btn btn-secondary btn-sm" id="fc-reveal-all-btn">👁️ Hiện tất cả đáp án</button>
+        </div>
+        <div class="fc-grid-list" id="fc-grid-container"></div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 6: EOS FE EXAM SIMULATOR ==================== -->
+    <section class="tab-panel" id="tab-quiz">
+      <div class="card" style="margin-bottom:1.25rem;">
+        <div class="card-header" style="margin-bottom:0.75rem;">
+          <div>
+            <h2 class="card-title">🏛️ Phòng Thi Thử FE PRO192 Chuẩn EOS FPT (60 Phút / Thang Điểm 10.0)</h2>
+            <p style="font-size:0.92rem;color:var(--text-secondary);margin-top:0.2rem;">
+              Thi thử đề chuẩn 50 câu bấm giờ 60 phút hoặc luyện tập theo từng chương (kèm lời giải &amp; trace từng dòng code Java).
+            </p>
+          </div>
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+            <button class="btn btn-sm" onclick="launchProExam('🏆 Đề FE PRO192 - SU26 (50 câu - Full Giải)', 'exam', 60, 999)">🏆 Đề SU26 FE (50c)</button>
+            <button class="btn btn-secondary btn-sm" onclick="launchProExam('🏆 Đề FE PRO192 - SP26 B5 RE (50 câu - Full Giải)', 'exam', 60, 999)">🏆 SP26 B5 RE (50c)</button>
+            <button class="btn btn-secondary btn-sm" onclick="launchProExam('🏆 Đề FE PRO192 - SP26 RE (50 câu - Full Giải)', 'exam', 60, 999)">🏆 SP26 RE (50c)</button>
+            <button class="btn btn-secondary btn-sm" onclick="launchProExam('🏆 Đề FE PRO192 - SP26 B5 FE (50 câu - Full Giải)', 'exam', 60, 999)">🏆 SP26 B5 FE (50c)</button>
+            <button class="btn btn-secondary btn-sm" onclick="launchProExam('🏆 Đề FE PRO192 - SP26 FE (50 câu - Full Giải)', 'exam', 60, 999)">🏆 SP26 FE (50c)</button>
+            <button class="btn btn-secondary btn-sm" onclick="launchProExam('🏆 Đề FE PRO192 - FA25 RE (55 câu - Full Giải)', 'exam', 60, 999)">🏆 FA25 RE (55c)</button>
+            <button class="btn btn-success btn-sm" onclick="launchProExam('🎯 Bẫy Mới 2026 (Form SU26/SP26)', 'practice', 30, 999)">🎯 20 Câu Bẫy Mới 2026</button>
+            <button class="btn btn-secondary btn-sm" onclick="launchProExam('ALL', 'exam', 60, 50)">⏱️ Thi Đề Trộn 50c (60p)</button>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:0.85rem;">
+          <div style="display:flex;gap:0.75rem;flex-wrap:wrap;flex:1;">
+            <div class="input-group" style="margin-bottom:0;min-width:220px;flex:1;">
+              <label>Chủ đề câu hỏi</label>
+              <select id="quiz-topic-select" class="form-control"></select>
+            </div>
+            <div class="input-group" style="margin-bottom:0;width:240px;">
+              <label>Chế độ làm bài</label>
+              <select id="quiz-mode-select" class="form-control">
+                <option value="exam">⏱️ Thi Như Thật (Bấm giờ &amp; Chấm điểm)</option>
+                <option value="practice">💡 Luyện tập (Hiện lời giải ngay)</option>
+              </select>
+            </div>
+            <div class="input-group" style="margin-bottom:0;width:155px;">
+              <label>Số lượng câu</label>
+              <select id="quiz-count-select" class="form-control">
+                <option value="15">15 câu</option>
+                <option value="30">30 câu</option>
+                <option value="50" selected>50 câu (Chuẩn FE)</option>
+                <option value="999">Tất cả câu</option>
+              </select>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.6rem;">
+            <span class="badge badge-warning mono" id="quiz-timer-box" style="display:none;font-size:1.05rem;padding:0.5rem 0.9rem;font-weight:800;">⏱️ 60:00</span>
+            <button class="btn" id="quiz-start-btn">🚀 Bắt đầu / Làm mới</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="quiz-result-banner" style="display:none;"></div>
+
+      <div class="quiz-layout">
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.85rem;">
+            <div id="quiz-q-meta" style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;"></div>
+            <button class="btn btn-secondary btn-sm" id="quiz-flag-btn">🏳️ Gắn cờ xem lại</button>
+          </div>
+
+          <div id="quiz-q-text" class="quiz-question-text" style="white-space:pre-line;"></div>
+          <div id="quiz-q-img-wrap" style="display:none;"></div>
+          <div id="quiz-options-list"></div>
+          <div id="quiz-explanation-box" class="explanation-box" style="display:none;"></div>
+
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.55rem;margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--border);">
+            <button class="btn btn-secondary" id="quiz-prev-btn">&larr; Câu trước</button>
+            <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+              <button class="btn btn-secondary" id="quiz-peek-ans-btn">👁️ Xem lời giải câu này</button>
+              <button class="btn btn-success" id="quiz-submit-btn">🏁 Nộp bài &amp; Chấm điểm</button>
+            </div>
+            <button class="btn" id="quiz-next-btn">Câu tiếp &rarr;</button>
+          </div>
+        </div>
+
+        <div class="card" style="height:fit-content;">
+          <div class="card-header" style="margin-bottom:0.65rem;">
+            <div>
+              <h3 class="card-title" style="font-size:0.96rem;">🗺️ Bảng Câu Hỏi (EOS Palette)</h3>
+              <div id="quiz-progress-summary" style="font-size:0.82rem;color:var(--text-secondary);margin-top:0.15rem;">Đã làm: 0 / 50 câu</div>
+            </div>
+          </div>
+          <div class="q-palette" id="quiz-palette-grid"></div>
+        </div>
+      </div>
+
+      <div id="quiz-full-review-sheet" style="display:none;margin-top:1.25rem;"></div>
+    </section>
+  </main>
+
+  <!-- Image Fullscreen Lightbox -->
+  <div id="pro-lightbox-overlay" onclick="closeProLightbox()" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;padding:1.5rem;cursor:zoom-out;">
+    <img id="pro-lightbox-img" src="" alt="Phóng to ảnh câu hỏi" style="max-width:96vw;max-height:92vh;border-radius:10px;background:#fff;padding:8px;box-shadow:0 12px 40px rgba(0,0,0,0.5);" onclick="event.stopPropagation()" />
+    <button onclick="closeProLightbox()" style="position:fixed;top:1rem;right:1.25rem;background:rgba(255,255,255,0.18);color:#fff;border:1px solid rgba(255,255,255,0.35);border-radius:8px;padding:0.45rem 0.9rem;font-weight:800;cursor:pointer;font-size:0.95rem;">✕ Đóng (Esc)</button>
+  </div>
+
+  <div class="toast" id="app-toast">Đã lưu!</div>
+
+  <footer class="footer">
+    PRO192 Study Hub • Thiết kế chuyên biệt cho sinh viên FPT University ôn tập môn Object-Oriented Programming with Java (PE Q1–Q4 &amp; FE).
+  </footer>
+
+  <script src="js/pro192-data.js?v=20261124-2"></script>
+  <script src="js/pro192-past-exams.js?v=20261124-2"></script>
+  <script src="js/pro192-lessons.js?v=20261124-2"></script>
+  <script src="js/pro192-app.js?v=20261124-2"></script>
+</body>
+</html>
